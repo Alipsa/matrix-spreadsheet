@@ -9,14 +9,14 @@ import org.apache.poi.ss.usermodel.WorkbookFactory
 class ExcelImporter {
 
     static TableMatrix importExcelSheet(Map params) {
-        def fp = params.getOrDefault('filePath', null)
-        String filePath
+        def fp = params.getOrDefault('file', null)
+        String file
         if (fp instanceof File) {
-           filePath = fp.getAbsolutePath()
+           file = fp.getAbsolutePath()
         } else {
-            filePath = String.valueOf(fp)
+            file = String.valueOf(fp)
         }
-        validateNotNull(filePath, 'filePath')
+        validateNotNull(file, 'file')
         String sheetName = params.getOrDefault('sheetName', 'Sheet1')
         validateNotNull(sheetName, 'sheetName')
         Integer startRow = params.getOrDefault('startRow',1) as Integer
@@ -37,7 +37,7 @@ class ExcelImporter {
         validateNotNull(firstRowAsColNames, 'firstRowAsColNames')
 
         return importExcelSheet(
-                filePath,
+                file,
                 sheetName,
                 startRow as int,
                 endRow as int,
@@ -47,13 +47,13 @@ class ExcelImporter {
         )
     }
 
-    static TableMatrix importExcelSheet(String filePath, String sheetName = 'Sheet1',
+    static TableMatrix importExcelSheet(String file, String sheetName = 'Sheet1',
                                         int startRow = 1, int endRow,
                                         String startCol = 'A', String endCol,
                                         boolean firstRowAsColNames = true) {
 
         return importExcelSheet(
-                filePath,
+                file,
                 sheetName,
                 startRow as int,
                 endRow as int,
@@ -63,12 +63,12 @@ class ExcelImporter {
         )
     }
 
-    static TableMatrix importExcelSheet(String filePath, String sheetName = 'Sheet1',
+    static TableMatrix importExcelSheet(String file, String sheetName = 'Sheet1',
                                           int startRow = 1, int endRow,
                                           int startCol = 1, int endCol,
                                           boolean firstRowAsColNames = true) {
         def header = []
-        File excelFile = FileUtil.checkFilePath(filePath);
+        File excelFile = FileUtil.checkFilePath(file);
         try (Workbook workbook = WorkbookFactory.create(excelFile)) {
             Sheet sheet = workbook.getSheet(sheetName)
             if (firstRowAsColNames) {
