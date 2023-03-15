@@ -8,43 +8,78 @@ import org.apache.poi.ss.usermodel.WorkbookFactory
 
 class ExcelImporter {
 
-    static final String FILE_PATH = 'filePath'
-    static final String SHEET_NAME = 'sheetName'
-    static final String START_ROW_NUM = 'startRowNum'
-    static final String END_ROW_NUM = 'endRowNum'
-    static final String START_COL_NUM = 'startColNum'
-    static final String END_COL_NUM = 'endColNum'
-    static final String FIRST_ROW_AS_COL_NAMES = 'firstRowAsColNames'
-
-
     static TableMatrix importExcelSheet(Map params) {
-        String filePath = params.getOrDefault(FILE_PATH, null)
-        String sheetName = params.getOrDefault(SHEET_NAME, 'Sheet1')
-        Integer startRowNum = params.getOrDefault(START_ROW_NUM,1) as Integer
-        Integer endRowNum = params.getOrDefault(END_ROW_NUM, null) as Integer
-        Integer startColNum = params.getOrDefault(START_COL_NUM, 1) as Integer
-        int endColNum = params.getOrDefault(END_COL_NUM, null) as Integer
-        boolean firstRowAsColNames = params.getOrDefault(FIRST_ROW_AS_COL_NAMES, false) as boolean
-        return importExcelSheet(filePath, sheetName, startRowNum, endRowNum, startColNum, endColNum, firstRowAsColNames)
+        def fp = params.getOrDefault('filePath', null)
+        String filePath
+        if (fp instanceof File) {
+           filePath = fp.getAbsolutePath()
+        } else {
+            filePath = String.valueOf(fp)
+        }
+        validateNotNull(filePath, 'filePath')
+        String sheetName = params.getOrDefault('sheetName', 'Sheet1')
+        validateNotNull(sheetName, 'sheetName')
+        Integer startRow = params.getOrDefault('startRow',1) as Integer
+        validateNotNull(startRow, 'startRow')
+        Integer endRow = params.getOrDefault('endRow', null) as Integer
+        validateNotNull(endRow, 'endRow')
+        def startCol = params.getOrDefault('startCol', 1)
+        if (startCol instanceof String) {
+            startCol = SpreadsheetUtil.asColumnNumber(startCol)
+        }
+        validateNotNull(startCol, 'startCol')
+        def endCol = params.get('endCol')
+        if (endCol instanceof String) {
+            endCol = SpreadsheetUtil.asColumnNumber(endCol)
+        }
+        validateNotNull(endCol, 'endCol')
+        Boolean firstRowAsColNames = params.getOrDefault('firstRowAsColNames', true) as Boolean
+        validateNotNull(firstRowAsColNames, 'firstRowAsColNames')
+
+        return importExcelSheet(
+                filePath,
+                sheetName,
+                startRow as int,
+                endRow as int,
+                startCol as int,
+                endCol as int,
+                firstRowAsColNames as boolean
+        )
     }
 
     static TableMatrix importExcelSheet(String filePath, String sheetName = 'Sheet1',
-                                          int startRowNum = 1, int endRowNum,
-                                          int startColNum = 1, int endColNum,
-                                          boolean firstRowAsColNames = false) {
+                                        int startRow = 1, int endRow,
+                                        String startCol = 'A', String endCol,
+                                        boolean firstRowAsColNames = true) {
+
+        return importExcelSheet(
+                filePath,
+                sheetName,
+                startRow as int,
+                endRow as int,
+                SpreadsheetUtil.asColumnNumber(startCol) as int,
+                SpreadsheetUtil.asColumnNumber(endCol) as int,
+                firstRowAsColNames as boolean
+        )
+    }
+
+    static TableMatrix importExcelSheet(String filePath, String sheetName = 'Sheet1',
+                                          int startRow = 1, int endRow,
+                                          int startCol = 1, int endCol,
+                                          boolean firstRowAsColNames = true) {
         def header = []
         File excelFile = FileUtil.checkFilePath(filePath);
         try (Workbook workbook = WorkbookFactory.create(excelFile)) {
             Sheet sheet = workbook.getSheet(sheetName)
             if (firstRowAsColNames) {
-                buildHeaderRow(startRowNum, startColNum, endColNum, header, sheet)
-                startRowNum = startRowNum + 1
+                buildHeaderRow(startRow, startCol, endCol, header, sheet)
+                startRow = startRow + 1
             } else {
-                for (int i = 1; i <= endColNum - startColNum; i++) {
+                for (int i = 1; i <= endCol - startCol; i++) {
                     header.add(String.valueOf(i))
                 }
             }
-            return importExcel(sheet, startRowNum, endRowNum, startColNum, endColNum, header)
+            return importExcel(sheet, startRow, endRow, startCol, endCol, header)
         }
     }
 
@@ -83,5 +118,11 @@ class ExcelImporter {
             matrix.add(rowList)
         }
         return TableMatrix.create(colNames, matrix, [String]*colNames.size())
+    }
+
+    static void validateNotNull(Object paramVal, String paramName) {
+        if (paramVal == null) {
+            throw new IllegalArgumentException("$paramName cannot be null")
+        }
     }
 }
