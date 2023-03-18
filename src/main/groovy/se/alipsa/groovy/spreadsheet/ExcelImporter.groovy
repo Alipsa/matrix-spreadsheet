@@ -47,6 +47,18 @@ class ExcelImporter {
         )
     }
 
+    /**
+     * Import an excel spreadsheet
+     * @param file the filePath or the file object pointing to the excel file
+     * @param sheetName the name of the sheet to import, default is 'Sheet1'
+     * @param startRow the starting row for the import (as you would see the row number in excel), defaults to 1
+     * @param endRow the last row to import
+     * @param startCol the starting column name (A, B etc) or column number (1, 2 etc.)
+     * @param endCol the end column name (K, L etc) or column number (11, 12 etc.)
+     * @param firstRowAsColNames whether the first row should be used for the names of each column, if false
+     * it column names will be v1, v2 etc. Defaults to true
+     * @return A TableMatrix with the excel data.
+     */
     static TableMatrix importExcelSheet(String file, String sheetName = 'Sheet1',
                                         int startRow = 1, int endRow,
                                         String startCol = 'A', String endCol,
