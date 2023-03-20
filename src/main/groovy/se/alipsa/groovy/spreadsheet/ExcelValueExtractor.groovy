@@ -1,85 +1,95 @@
 package se.alipsa.groovy.spreadsheet;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.*
+
+import java.time.LocalDateTime;
 
 /**
  * A value extractor specialized in extracting info from an Excel file
  */
 public class ExcelValueExtractor extends ValueExtractor {
 
-   private final Sheet sheet;
-   private final FormulaEvaluator evaluator;
-   private final DataFormatter dataFormatter;
+   private final Sheet sheet
+   private final FormulaEvaluator evaluator
+   private final DataFormatter dataFormatter
 
    public ExcelValueExtractor(Sheet sheet, DataFormatter... dataFormatterOpt) {
       if (sheet == null) {
-         throw new IllegalArgumentException("Sheet is null, will not be able to extract any values");
+         throw new IllegalArgumentException("Sheet is null, will not be able to extract any values")
       }
-      this.sheet = sheet;
-      evaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
+      this.sheet = sheet
+      evaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator()
       if (dataFormatterOpt.length > 0) {
-         dataFormatter = dataFormatterOpt[0];
+         dataFormatter = dataFormatterOpt[0]
       } else {
-         dataFormatter = new DataFormatter();
+         dataFormatter = new DataFormatter()
       }
    }
 
 
    public Double getDouble(int row, int column) {
-      return getDouble(sheet.getRow(row), column);
+      return getDouble(sheet.getRow(row), column)
    }
 
    public Double getDouble(Row row, int column) {
-      return row == null ? null : getDouble(getObject(row.getCell(column)));
+      return row == null ? null : getDouble(getObject(row.getCell(column)))
    }
 
    public Float getFloat(int row, int column) {
-      Double d = getDouble(sheet.getRow(row), column);
-      return d == null ? null : d.floatValue();
+      Double d = getDouble(sheet.getRow(row), column)
+      return d == null ? null : d.floatValue()
    }
 
    public Float getFloat(Row row, int column) {
-      if (row == null) return null;
-      Double d = getDouble(row, column);
-      return d == null ? null : d.floatValue();
+      if (row == null) return null
+      Double d = getDouble(row, column)
+      return d == null ? null : d.floatValue()
    }
 
    public Integer getInteger(int row, int column) {
-      return getInteger(sheet.getRow(row), column);
+      return getInteger(sheet.getRow(row), column)
    }
 
    public Integer getInteger(Row row, int column) {
-      return row == null ? null : getInt(getObject(row.getCell(column)));
+      return row == null ? null : getInt(getObject(row.getCell(column)))
    }
 
    public String getString(int row, int column) {
-      return getString(sheet.getRow(row), column);
+      return getString(sheet.getRow(row), column)
    }
 
    public String getString(Row row, int column) {
-      if (row == null) return null;
-      Object val = getObject(row.getCell(column));
-      return val == null ? null : String.valueOf(val);
+      if (row == null) return null
+      Object val = getObject(row.getCell(column))
+      return val == null ? null : String.valueOf(val)
    }
 
    public String getString(Cell cell) {
-      return getString(getObject(cell));
+      return getString(getObject(cell))
    }
 
    public Long getLong(int row, int column) {
-      return getLong(sheet.getRow(row), column);
+      return getLong(sheet.getRow(row), column)
    }
 
    public Long getLong(Row row, int column) {
-      return row == null ? null : getLong(getObject(row.getCell(column)));
+      return row == null ? null : getLong(getObject(row.getCell(column)))
    }
 
    public Boolean getBoolean(int row, int column) {
-      return getBoolean(sheet.getRow(row), column);
+      return getBoolean(sheet.getRow(row), column)
    }
 
    public Boolean getBoolean(Row row, int column) {
-      return row == null ? null : getBoolean(getObject(row.getCell(column)));
+      return row == null ? null : getBoolean(getObject(row.getCell(column)))
+   }
+
+   LocalDateTime getLocalDateTime(Row row, int column) {
+      return getLocalDateTime(row.getCell(column))
+   }
+
+   LocalDateTime getLocalDateTime(Cell cell) {
+      return LocalDateTime.parse(String.valueOf(getObject(cell)), SpreadsheetUtil.dateTimeFormatter)
    }
 
    /**
@@ -89,43 +99,43 @@ public class ExcelValueExtractor extends ValueExtractor {
     */
    public Object getObject(Cell cell) {
       if (cell == null) {
-         return null;
+         return null
       }
 
       switch (cell.getCellType()) {
          case CellType.BLANK:
-            return null;
+            return null
          case CellType.NUMERIC:
             if (DateUtil.isCellDateFormatted(cell)) {
-               return SpreadsheetUtil.dateTimeFormatter.format(cell.getLocalDateTimeCellValue());
+               return SpreadsheetUtil.dateTimeFormatter.format(cell.getLocalDateTimeCellValue())
             }
-            return cell.getNumericCellValue();
+            return cell.getNumericCellValue()
          case CellType.BOOLEAN:
-            return cell.getBooleanCellValue();
+            return cell.getBooleanCellValue()
          case CellType.STRING:
-            return cell.getStringCellValue();
+            return cell.getStringCellValue()
          case CellType.FORMULA:
-            return getValueFromFormulaCell(cell);
+            return getValueFromFormulaCell(cell)
          default:
-            return dataFormatter.formatCellValue(cell);
+            return dataFormatter.formatCellValue(cell)
       }
    }
 
    private Object getValueFromFormulaCell(Cell cell) {
       switch (evaluator.evaluateFormulaCell(cell)) {
-         case BLANK:
-            return null;
-         case NUMERIC:
+         case CellType.BLANK:
+            return null
+         case CellType.NUMERIC:
             if (DateUtil.isCellDateFormatted(cell)) {
-               return cell.getLocalDateTimeCellValue();
+               return cell.getLocalDateTimeCellValue()
             }
-            return evaluator.evaluate(cell).getNumberValue();
-         case BOOLEAN:
-            return evaluator.evaluate(cell).getBooleanValue();
-         case STRING:
-            return evaluator.evaluate(cell).getStringValue();
+            return evaluator.evaluate(cell).getNumberValue()
+         case CellType.BOOLEAN:
+            return evaluator.evaluate(cell).getBooleanValue()
+         case CellType.STRING:
+            return evaluator.evaluate(cell).getStringValue()
          default:
-            return dataFormatter.formatCellValue(cell);
+            return dataFormatter.formatCellValue(cell)
       }
    }
 }

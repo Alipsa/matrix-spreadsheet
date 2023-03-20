@@ -18,7 +18,7 @@ repositories {
 dependencies {
     def groovy = 'org.apache.groovy:groovy:4.0.9'
     compileOnly groovy
-    implementation('se.alipsa.groovy:matrix:1.0-SNAPSHOT')
+    implementation('se.alipsa.groovy:matrix:1.0.2-SNAPSHOT')
     implementation('org.apache.poi:poi:5.2.3')
     implementation('org.apache.poi:poi-ooxml:5.2.3')
 

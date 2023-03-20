@@ -1,6 +1,9 @@
 package spreadsheet
 
+import org.apache.poi.ss.usermodel.DateUtil
 import org.junit.jupiter.api.Test
+
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import java.time.LocalDate
@@ -29,9 +32,10 @@ class ImportTest {
                 "startCol": 'A',
                 "endCol": 'D'
         )
-        assertEquals("3.0", table[2, 0])
-        assertEquals("2023-05-06 00:00:00.000", table[5, 2])
-        assertEquals("17.4", table['baz'][table.rowCount()-1])
+        //println(table.content())
+        assertEquals(3.0d, table[2, 0])
+        assertEquals(LocalDateTime.parse("2023-05-06T00:00:00.000"), table[5, 2])
+        assertEquals(17.4, table['baz'][table.rowCount()-1])
         assertEquals(['id', 'foo', 'bar', 'baz'], table.columnNames())
     }
 }

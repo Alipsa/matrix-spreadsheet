@@ -1,5 +1,7 @@
 package se.alipsa.groovy.spreadsheet
 
+import org.apache.poi.ss.usermodel.CellType
+import org.apache.poi.ss.usermodel.DateUtil
 import se.alipsa.groovy.matrix.*
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
@@ -100,24 +102,33 @@ class ExcelImporter {
         startColNum--
         endColNum--
 
-        ExcelValueExtractor ext = new ExcelValueExtractor(sheet);
-        int numRows = 0
+        ExcelValueExtractor ext = new ExcelValueExtractor(sheet)
         List<List<?>> matrix = []
         List<?> rowList
         for (int rowIdx = startRowNum; rowIdx <= endRowNum; rowIdx++) {
-            numRows++;
             Row row = sheet.getRow(rowIdx)
             rowList = []
-            int i = 0
             for (int colIdx = startColNum; colIdx <= endColNum; colIdx++) {
-                //System.out.println("Adding ext.getString(" + rowIdx + ", " + colIdx+ ") = " + ext.getString(row, colIdx));
-                //builders.get(i++).add(ext.getString(row, colIdx));
-                String val = ext.getString(row, colIdx)
-                rowList.add(val)
+                def cell = row.getCell(colIdx)
+                //println("cell[$rowIdx, $colIdx]: ${cell.getCellType()}: val: ${ext.getObject(cell)}")
+                switch (cell.getCellType()) {
+                    case CellType.BLANK -> rowList.add(null)
+                    case CellType.BOOLEAN -> rowList.add(ext.getBoolean(row, colIdx))
+                    case CellType.NUMERIC -> {
+                        if (DateUtil.isCellDateFormatted(cell)) {
+                            rowList.add(ext.getLocalDateTime(cell))
+                        } else {
+                            rowList.add(ext.getDouble(row, colIdx))
+                        }
+                    }
+                    case CellType.STRING -> rowList.add(ext.getString(row, colIdx))
+                    case CellType.FORMULA -> rowList.add(ext.getObject(cell))
+                    default -> rowList.add(ext.getString(row, colIdx))
+                }
             }
             matrix.add(rowList)
         }
-        return TableMatrix.create(colNames, matrix, [String]*colNames.size())
+        return TableMatrix.create(colNames, matrix, [Object]*colNames.size())
     }
 
     static void validateNotNull(Object paramVal, String paramName) {
