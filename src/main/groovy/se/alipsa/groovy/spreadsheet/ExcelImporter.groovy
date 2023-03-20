@@ -122,20 +122,24 @@ class ExcelImporter {
             rowList = []
             for (int colIdx = startColNum; colIdx <= endColNum; colIdx++) {
                 def cell = row.getCell(colIdx)
-                //println("cell[$rowIdx, $colIdx]: ${cell.getCellType()}: val: ${ext.getObject(cell)}")
-                switch (cell.getCellType()) {
-                    case CellType.BLANK -> rowList.add(null)
-                    case CellType.BOOLEAN -> rowList.add(ext.getBoolean(row, colIdx))
-                    case CellType.NUMERIC -> {
-                        if (DateUtil.isCellDateFormatted(cell)) {
-                            rowList.add(ext.getLocalDateTime(cell))
-                        } else {
-                            rowList.add(ext.getDouble(row, colIdx))
+                if (cell == null) {
+                    rowList.add(null)
+                } else {
+                    //println("cell[$rowIdx, $colIdx]: ${cell.getCellType()}: val: ${ext.getObject(cell)}")
+                    switch (cell.getCellType()) {
+                        case CellType.BLANK -> rowList.add(null)
+                        case CellType.BOOLEAN -> rowList.add(ext.getBoolean(row, colIdx))
+                        case CellType.NUMERIC -> {
+                            if (DateUtil.isCellDateFormatted(cell)) {
+                                rowList.add(ext.getLocalDateTime(cell))
+                            } else {
+                                rowList.add(ext.getDouble(row, colIdx))
+                            }
                         }
+                        case CellType.STRING -> rowList.add(ext.getString(row, colIdx))
+                        case CellType.FORMULA -> rowList.add(ext.getObject(cell))
+                        default -> rowList.add(ext.getString(row, colIdx))
                     }
-                    case CellType.STRING -> rowList.add(ext.getString(row, colIdx))
-                    case CellType.FORMULA -> rowList.add(ext.getObject(cell))
-                    default -> rowList.add(ext.getString(row, colIdx))
                 }
             }
             matrix.add(rowList)
