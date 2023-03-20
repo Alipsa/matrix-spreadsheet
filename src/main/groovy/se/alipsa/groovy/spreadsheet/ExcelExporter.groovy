@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import se.alipsa.groovy.matrix.TableMatrix
+import se.alipsa.groovy.matrix.ValueConverter
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -35,7 +36,6 @@ class ExcelExporter {
   }
 
   private static void buildSheet(TableMatrix data, Sheet sheet) {
-
     def creationHelper = sheet.getWorkbook().getCreationHelper()
     def localDateStyle = sheet.getWorkbook().createCellStyle()
     localDateStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-MM-dd"))
@@ -58,18 +58,18 @@ class ExcelExporter {
         Class type = data.columnType(col)
 
         if (type in [double, Double, BigDecimal, float, Float, Long, long, BigInteger, Number]) {
-          cell.setCellValue(matrixRow[col] as Double)
+          cell.setCellValue(ValueConverter.toDouble(matrixRow[col]))
         } else if (type in [int, Integer, short, Short]) {
-          cell.setCellValue(matrixRow[col] as Integer)
+          cell.setCellValue(ValueConverter.toInteger(matrixRow[col]))
         } else if (type in [byte, Byte]) {
           cell.setCellValue(matrixRow[col] as Byte)
         }else if (boolean == type || Boolean == type) {
-          cell.setCellValue(matrixRow[col] as Boolean)
+          cell.setCellValue(ValueConverter.toBoolean(matrixRow[col]))
         } else if (LocalDate == type) {
-          cell.setCellValue(matrixRow[col] as LocalDate)
+          cell.setCellValue(ValueConverter.toLocalDate(matrixRow[col]))
           cell.setCellStyle(localDateStyle)
         } else if (LocalDateTime == type) {
-          cell.setCellValue(matrixRow[col] as LocalDateTime)
+          cell.setCellValue(ValueConverter.toLocalDateTime(matrixRow[col]))
           cell.setCellStyle(localDateTimeStyle)
         } else if (Date == type) {
           cell.setCellValue(matrixRow[col] as Date)

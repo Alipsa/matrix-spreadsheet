@@ -7,13 +7,13 @@ import java.time.LocalDateTime;
 /**
  * A value extractor specialized in extracting info from an Excel file
  */
-public class ExcelValueExtractor extends ValueExtractor {
+class ExcelValueExtractor extends ValueExtractor {
 
    private final Sheet sheet
    private final FormulaEvaluator evaluator
    private final DataFormatter dataFormatter
 
-   public ExcelValueExtractor(Sheet sheet, DataFormatter... dataFormatterOpt) {
+   ExcelValueExtractor(Sheet sheet, DataFormatter... dataFormatterOpt) {
       if (sheet == null) {
          throw new IllegalArgumentException("Sheet is null, will not be able to extract any values")
       }
@@ -27,60 +27,60 @@ public class ExcelValueExtractor extends ValueExtractor {
    }
 
 
-   public Double getDouble(int row, int column) {
+   Double getDouble(int row, int column) {
       return getDouble(sheet.getRow(row), column)
    }
 
-   public Double getDouble(Row row, int column) {
+   Double getDouble(Row row, int column) {
       return row == null ? null : getDouble(getObject(row.getCell(column)))
    }
 
-   public Float getFloat(int row, int column) {
+   Float getFloat(int row, int column) {
       Double d = getDouble(sheet.getRow(row), column)
       return d == null ? null : d.floatValue()
    }
 
-   public Float getFloat(Row row, int column) {
+   Float getFloat(Row row, int column) {
       if (row == null) return null
       Double d = getDouble(row, column)
       return d == null ? null : d.floatValue()
    }
 
-   public Integer getInteger(int row, int column) {
+   Integer getInteger(int row, int column) {
       return getInteger(sheet.getRow(row), column)
    }
 
-   public Integer getInteger(Row row, int column) {
+   Integer getInteger(Row row, int column) {
       return row == null ? null : getInt(getObject(row.getCell(column)))
    }
 
-   public String getString(int row, int column) {
+   String getString(int row, int column) {
       return getString(sheet.getRow(row), column)
    }
 
-   public String getString(Row row, int column) {
+   String getString(Row row, int column) {
       if (row == null) return null
       Object val = getObject(row.getCell(column))
       return val == null ? null : String.valueOf(val)
    }
 
-   public String getString(Cell cell) {
+   String getString(Cell cell) {
       return getString(getObject(cell))
    }
 
-   public Long getLong(int row, int column) {
+   Long getLong(int row, int column) {
       return getLong(sheet.getRow(row), column)
    }
 
-   public Long getLong(Row row, int column) {
+   Long getLong(Row row, int column) {
       return row == null ? null : getLong(getObject(row.getCell(column)))
    }
 
-   public Boolean getBoolean(int row, int column) {
+   Boolean getBoolean(int row, int column) {
       return getBoolean(sheet.getRow(row), column)
    }
 
-   public Boolean getBoolean(Row row, int column) {
+   Boolean getBoolean(Row row, int column) {
       return row == null ? null : getBoolean(getObject(row.getCell(column)))
    }
 
@@ -97,7 +97,7 @@ public class ExcelValueExtractor extends ValueExtractor {
     * @param cell the cell to extract the value from
     * @return the value
     */
-   public Object getObject(Cell cell) {
+   Object getObject(Cell cell) {
       if (cell == null) {
          return null
       }
