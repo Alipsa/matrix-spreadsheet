@@ -9,6 +9,7 @@ plugins {
 
 group 'se.alipsa.groovy'
 version '1.0-SNAPSHOT'
+description 'Groovy spreadsheet import/export'
 
 repositories {
     mavenLocal()
@@ -16,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    def groovy = 'org.apache.groovy:groovy:4.0.9'
+    def groovy = 'org.apache.groovy:groovy:4.0.10'
     compileOnly groovy
     implementation('se.alipsa.groovy:matrix:1.0.2-SNAPSHOT')
     implementation('org.apache.poi:poi:5.2.3')
