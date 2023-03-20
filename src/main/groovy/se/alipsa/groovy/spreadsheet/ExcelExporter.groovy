@@ -49,8 +49,8 @@ class ExcelExporter {
     }
 
     int rowIdx = 1
-    for (matrixRow in data.matrix()) {
-      println "MatrixRow = $matrixRow"
+    for (matrixRow in data.rows()) {
+      //println "MatrixRow = $matrixRow"
       for (int col = 0; col < data.columnCount(); col++) {
         Row row = sheet.getRow(rowIdx)
         if (row == null) row = sheet.createRow(rowIdx)
@@ -75,7 +75,12 @@ class ExcelExporter {
           cell.setCellValue(matrixRow[col] as Date)
           cell.setCellStyle(localDateTimeStyle)
         } else {
-          cell.setCellValue(String.valueOf(matrixRow[col]))
+          def val = matrixRow[col]
+          if (val == null) {
+            cell.setBlank()
+          } else {
+            cell.setCellValue(String.valueOf(val))
+          }
         }
       }
       rowIdx++
