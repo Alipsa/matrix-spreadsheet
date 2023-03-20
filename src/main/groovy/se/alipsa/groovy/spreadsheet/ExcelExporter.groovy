@@ -63,7 +63,7 @@ class ExcelExporter {
           cell.setCellValue(ValueConverter.toInteger(matrixRow[col]))
         } else if (type in [byte, Byte]) {
           cell.setCellValue(matrixRow[col] as Byte)
-        }else if (boolean == type || Boolean == type) {
+        } else if (boolean == type || Boolean == type) {
           cell.setCellValue(ValueConverter.toBoolean(matrixRow[col]))
         } else if (LocalDate == type) {
           cell.setCellValue(ValueConverter.toLocalDate(matrixRow[col]))
