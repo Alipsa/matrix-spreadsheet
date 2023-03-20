@@ -28,6 +28,7 @@ class ExportTest {
     def file = File.createTempFile("matrix", ".xlsx")
     ExcelExporter.exportExcel(file, table)
     println("Wrote to $file")
+    file.deleteOnExit()
   }
 
   static List<LocalDateTime> toLocalDateTimes(String[] dates) {
