@@ -24,10 +24,19 @@ class ExcelExporter {
 
   static void exportExcel(File file, TableMatrix data) {
 
-    try (Workbook workbook = WorkbookFactory.create(isXssf(file))) {
-      Sheet sheet = workbook.createSheet();
-      buildSheet(data, sheet)
-      writeFile(file, workbook)
+    if (file.exists() && file.length() > 0) {
+      try (FileInputStream fis = new FileInputStream(file)
+           Workbook workbook = WorkbookFactory.create(fis)) {
+        Sheet sheet = workbook.createSheet();
+        buildSheet(data, sheet)
+        writeFile(file, workbook)
+      }
+    } else {
+      try (Workbook workbook = WorkbookFactory.create(isXssf(file))) {
+        Sheet sheet = workbook.createSheet();
+        buildSheet(data, sheet)
+        writeFile(file, workbook)
+      }
     }
   }
 

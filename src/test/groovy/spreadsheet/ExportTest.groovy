@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import se.alipsa.groovy.matrix.ConversionException
 import se.alipsa.groovy.matrix.TableMatrix
 import se.alipsa.groovy.spreadsheet.ExcelExporter
+import se.alipsa.groovy.spreadsheet.ExcelReader
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -29,6 +30,17 @@ class ExportTest {
     def file = File.createTempFile("matrix", ".xlsx")
     ExcelExporter.exportExcel(file, table)
     println("Wrote to $file")
-    //file.deleteOnExit()
+
+    def stats = [
+            id: [null,2,3,4,-5],
+            jan: [1123.1234, 2341.234, 1010.00122, 991, 1100.1],
+            feb: [1111.1235, 2312.235, 1001.00121, 999, 1200.7]
+    ]
+    def table2 = TableMatrix.create(stats, [int, BigDecimal, BigDecimal])
+    ExcelExporter.exportExcel(file, table2)
+    println("Wrote another sheet to $file")
+    try ( def reader = new ExcelReader(file)) {
+      assertEquals(2, reader.sheetNames.size(), "number of sheets")
+    }
   }
 }
