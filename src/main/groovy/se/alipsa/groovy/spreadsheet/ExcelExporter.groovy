@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.WorkbookFactory
+import org.apache.poi.ss.util.WorkbookUtil
 import se.alipsa.groovy.matrix.TableMatrix
 import se.alipsa.groovy.matrix.ValueConverter
 
@@ -17,27 +18,63 @@ class ExcelExporter {
 
   static final Logger logger = LogManager.getLogger()
 
-  static void exportExcel(String filePath, TableMatrix data) {
+  static String createValidSheetName(String suggestion) {
+    return WorkbookUtil.createSafeSheetName(suggestion)
+  }
+
+  /**
+   * Export to an Excel file. If the file does not exists, a new file will be created
+   * if the excel file exists and is not empty, a new sheet will be added to the excel
+   * The name of the sheet will correspond to the name of the TableMatrix
+   * @param filePath the path to the file to export
+   * @param data the TableMatrix data to export
+   * @return the actual name of the sheet created (illegal characters replaced by space)
+   */
+  static String exportExcel(String filePath, TableMatrix data) {
     File file = new File(filePath)
     exportExcel(file, data)
   }
 
-  static void exportExcel(File file, TableMatrix data) {
+  /**
+   * Export to an Excel file. If the file does not exists, a new file will be created
+   * if the excel file exists and is not empty, a new sheet will be added to the excel
+   * The name of the sheet will correspond to the name of the TableMatrix
+   * @param file the file to export
+   * @param data the TableMatrix data to export
+   * @return the actual name of the sheet created (illegal characters replaced by space)
+   */
+  static String exportExcel(File file, TableMatrix data) {
+    String sheetName = createValidSheetName(data.getName())
+    exportExcel(file, data, sheetName)
+    return sheetName
+  }
 
+  /**
+   * Export to an Excel file. If the file does not exists, a new file will be created
+   * if the excel file exists and is not empty, a new sheet will be added to the excel
+   *
+   * @param file the file to export
+   * @param data the TableMatrix data to export
+   * @param sheetName the name of the sheet to export to
+   * @return the actual name of the sheet created (illegal characters replaced by space)
+   */
+  static String exportExcel(File file, TableMatrix data, String sheetName) {
+    String validSheetName = createValidSheetName(sheetName)
     if (file.exists() && file.length() > 0) {
       try (FileInputStream fis = new FileInputStream(file)
            Workbook workbook = WorkbookFactory.create(fis)) {
-        Sheet sheet = workbook.createSheet();
+        Sheet sheet = workbook.createSheet(validSheetName)
         buildSheet(data, sheet)
         writeFile(file, workbook)
       }
     } else {
       try (Workbook workbook = WorkbookFactory.create(isXssf(file))) {
-        Sheet sheet = workbook.createSheet();
+        Sheet sheet = workbook.createSheet(validSheetName);
         buildSheet(data, sheet)
         writeFile(file, workbook)
       }
     }
+    return validSheetName
   }
 
   private static boolean isXssf(File file) {

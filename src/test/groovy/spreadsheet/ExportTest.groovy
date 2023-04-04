@@ -43,4 +43,11 @@ class ExportTest {
       assertEquals(2, reader.sheetNames.size(), "number of sheets")
     }
   }
+
+  @Test
+  void testValidSheetNames() {
+    assertEquals("abl rac adabra ", ExcelExporter.createValidSheetName("abl\\rac[adabra]"))
+    assertEquals(" Det var en gång ", ExcelExporter.createValidSheetName("'Det var en gång'"))
+    assertEquals("Det var en gång", ExcelExporter.createValidSheetName("Det var en gång"))
+  }
 }
