@@ -28,6 +28,14 @@ class ExcelReader implements Closeable {
         return names
     }
 
+    static List<String> getSheetNames(Workbook workbook) throws Exception {
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+            names.add(workbook.getSheetAt(i).getSheetName());
+        }
+        return names
+    }
+
     /**
      * Find the first row index matching the content.
      * @param sheetNumber the sheet index (1 indexed)

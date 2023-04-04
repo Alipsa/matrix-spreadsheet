@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.ss.util.WorkbookUtil
+import org.apache.poi.util.IOUtils
 import se.alipsa.groovy.matrix.TableMatrix
 import se.alipsa.groovy.matrix.ValueConverter
 
@@ -63,6 +64,16 @@ class ExcelExporter {
     if (file.exists() && file.length() > 0) {
       try (FileInputStream fis = new FileInputStream(file)
            Workbook workbook = WorkbookFactory.create(fis)) {
+        List<String> sheetNames = ExcelReader.getSheetNames(workbook)
+        if (sheetNames.contains(validSheetName)) {
+          int index = 1
+          while (true) {
+            validSheetName = createValidSheetName(validSheetName + index++)
+            if (!sheetNames.contains(validSheetName)) {
+              break
+            }
+          }
+        }
         Sheet sheet = workbook.createSheet(validSheetName)
         buildSheet(data, sheet)
         writeFile(file, workbook)
@@ -138,7 +149,9 @@ class ExcelExporter {
       logger.warn("Workbook is null, cannot write to file");
       return
     }
-    logger.info("Writing spreadsheet to {}", file.getAbsolutePath());
+    logger.info("Writing spreadsheet to {}", file.getAbsolutePath())
+    // default is 100 000 000, 600M takes up about 1 GB of memory
+    IOUtils.setByteArrayMaxOverride(600_000_000)
     try(FileOutputStream fos = new FileOutputStream(file)) {
       workbook.write(fos)
     }
