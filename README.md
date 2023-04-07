@@ -35,8 +35,10 @@ The SpreadSheetImporter.importSpreadSheetSheet takes the following parameters:
 ## Export a spreadsheet
 
 ```groovy
-import static se.alipsa.groovy.spreadsheet.SpreadSheetImporter
+import static se.alipsa.groovy.matrix.ListConverter.*
 import se.alipsa.groovy.matrix.TableMatrix
+import se.alipsa.groovy.spreadsheet.SpreadSheetExporter
+import java.time.format.DateTimeFormatter
 
 def table = TableMatrix.create(
     [
