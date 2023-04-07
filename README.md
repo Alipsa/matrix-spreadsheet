@@ -1,16 +1,26 @@
 # spreadsheet
 Groovy spreadsheet import/export
 
-Here is a simple example:
+This library can import and export Excel and Libre/Open Office Calc spreadsheets.
+
+To use it, add the following to your gradle build script: `implementation 'se.alipsa.groovy:spreadsheet:1.0.0'`
+or if you use maven:
+```xml
+  <dependency>
+    <groupId>se.alipsa.groovy</groupId>
+    <artifactId>spreadsheet</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
 
 ## Importing a spreadsheet
 ```groovy
-import static se.alipsa.groovy.spreadsheet.ExcelImporter.*
+import static se.alipsa.groovy.spreadsheet.SpreadSheetImporter.*
 import se.alipsa.groovy.matrix.TableMatrix
 
-TableMatrix table = importExcelSheet(file: "Book1.xlsx", endRow: 11, endCol: 4)
+TableMatrix table = importSpreadSheet(file: "Book1.xlsx", endRow: 11, endCol: 4)
 ```
-The ExcelImporter.importExcelSheet takes the following parameters:
+The SpreadSheetImporter.importSpreadSheetSheet takes the following parameters:
 - _file_ the filePath or the file object pointing to the Excel file
 - _sheetName_ the name of the sheet to import, default is 'Sheet1'
 - _startRow_ the starting row for the import (as you would see the row number in Excel), defaults to 1
@@ -22,7 +32,7 @@ The ExcelImporter.importExcelSheet takes the following parameters:
 ## Export a spreadsheet
 
 ```groovy
-import static se.alipsa.groovy.spreadsheet.ExcelExporter
+import static se.alipsa.groovy.spreadsheet.SpreadSheetImporter
 import se.alipsa.groovy.matrix.TableMatrix
 
 def table = TableMatrix.create(
@@ -39,5 +49,30 @@ def table = TableMatrix.create(
 def file = File.createTempFile("matrix", ".xlsx")
 
 // Export the TableMatrix to an excel file
-ExcelExporter.exportExcel(file, table)
+SpreadSheetExporter.exportSpreadSheet(file, table)
 ```
+
+See [the tests](https://github.com/Alipsa/spreadsheet/tree/main/src/test/groovy/spreadsheet) for more usage examples!
+
+# Third party libraries used
+Note: only direct dependencies are listed below.
+
+### SODS 
+Used to handle ODS file import and export
+- URL: https://github.com/miachm/SODS
+- License: Unlicense
+
+### POI
+Used to handle Excel import and export
+- URL: https://poi.apache.org/
+- License: Apache 2.0
+
+### Matrix
+Used to define the data format i.e. the result from an import or the data to export
+- URL: https://github.com/Alipsa/matrix
+- License: MIT
+
+### Log4j
+Used to handle logging
+- URL: https://logging.apache.org/log4j/2.x/
+- License: Apache 2.0

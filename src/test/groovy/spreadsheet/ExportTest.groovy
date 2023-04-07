@@ -1,10 +1,14 @@
 package spreadsheet
 
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import se.alipsa.groovy.matrix.ConversionException
 import se.alipsa.groovy.matrix.TableMatrix
 import se.alipsa.groovy.spreadsheet.ExcelExporter
 import se.alipsa.groovy.spreadsheet.ExcelReader
+import se.alipsa.groovy.spreadsheet.OdsReader
+import se.alipsa.groovy.spreadsheet.SpreadSheetExporter
+import se.alipsa.groovy.spreadsheet.SpreadsheetUtil
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -15,8 +19,11 @@ import static se.alipsa.groovy.matrix.ListConverter.*
 
 class ExportTest {
 
-  @Test
-  void exportExcelTest() {
+  static TableMatrix table
+  static TableMatrix table2
+
+  @BeforeAll
+  static void init() {
     def matrix = [
         id: [null,2,3,4,-5],
         name: ['foo', 'bar', 'baz', 'bla', null],
@@ -25,19 +32,24 @@ class ExportTest {
         measure: [12.45, null, 14.11, 15.23, 10.99],
         active: [true, false, null, true, false]
     ]
-    def table = TableMatrix.create(matrix, [int, String, LocalDate, LocalDateTime, BigDecimal, Boolean])
+    table = TableMatrix.create(matrix, [int, String, LocalDate, LocalDateTime, BigDecimal, Boolean])
+    def stats = [
+        id: [null,2,3,4,-5],
+        jan: [1123.1234, 2341.234, 1010.00122, 991, 1100.1],
+        feb: [1111.1235, 2312.235, 1001.00121, 999, 1200.7]
+    ]
+    table2 = TableMatrix.create(stats, [int, BigDecimal, BigDecimal])
+  }
+
+  @Test
+  void exportExcelTest() {
+
     //println(table.content())
     def file = File.createTempFile("matrix", ".xlsx")
-    ExcelExporter.exportExcel(file, table)
+    SpreadSheetExporter.exportSpreadSheet(file, table)
     println("Wrote to $file")
 
-    def stats = [
-            id: [null,2,3,4,-5],
-            jan: [1123.1234, 2341.234, 1010.00122, 991, 1100.1],
-            feb: [1111.1235, 2312.235, 1001.00121, 999, 1200.7]
-    ]
-    def table2 = TableMatrix.create(stats, [int, BigDecimal, BigDecimal])
-    ExcelExporter.exportExcel(file, table2)
+    SpreadSheetExporter.exportSpreadSheet(file, table2)
     println("Wrote another sheet to $file")
     try ( def reader = new ExcelReader(file)) {
       assertEquals(2, reader.sheetNames.size(), "number of sheets")
@@ -45,9 +57,27 @@ class ExportTest {
   }
 
   @Test
+  void testOdsExport() {
+    def odsFile = File.createTempFile("matrix", ".ods")
+    if (odsFile.exists()) {
+      odsFile.delete()
+    }
+    SpreadSheetExporter.exportSpreadSheet(odsFile, table, "Sheet 1")
+    println("Wrote to $odsFile")
+    try ( def reader = new OdsReader(odsFile)) {
+      assertEquals(1, reader.sheetNames.size(), "number of sheets")
+    }
+    SpreadSheetExporter.exportSpreadSheet(odsFile, table2, "Sheet 2")
+    println("Wrote another sheet to $odsFile")
+    try ( def reader = new OdsReader(odsFile)) {
+      assertEquals(2, reader.sheetNames.size(), "number of sheets")
+    }
+  }
+
+  @Test
   void testValidSheetNames() {
-    assertEquals("abl rac adabra ", ExcelExporter.createValidSheetName("abl\\rac[adabra]"))
-    assertEquals(" Det var en gång ", ExcelExporter.createValidSheetName("'Det var en gång'"))
-    assertEquals("Det var en gång", ExcelExporter.createValidSheetName("Det var en gång"))
+    assertEquals("abl rac adabra ", SpreadsheetUtil.createValidSheetName("abl\\rac[adabra]"))
+    assertEquals(" Det var en gång ", SpreadsheetUtil.createValidSheetName("'Det var en gång'"))
+    assertEquals("Det var en gång", SpreadsheetUtil.createValidSheetName("Det var en gång"))
   }
 }

@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.WorkbookFactory
-import org.apache.poi.ss.util.WorkbookUtil
 import org.apache.poi.util.IOUtils
 import se.alipsa.groovy.matrix.TableMatrix
 import se.alipsa.groovy.matrix.ValueConverter
@@ -18,10 +17,6 @@ import java.time.LocalDateTime
 class ExcelExporter {
 
   static final Logger logger = LogManager.getLogger()
-
-  static String createValidSheetName(String suggestion) {
-    return WorkbookUtil.createSafeSheetName(suggestion)
-  }
 
   /**
    * Export to an Excel file. If the file does not exists, a new file will be created
@@ -45,7 +40,7 @@ class ExcelExporter {
    * @return the actual name of the sheet created (illegal characters replaced by space)
    */
   static String exportExcel(File file, TableMatrix data) {
-    String sheetName = createValidSheetName(data.getName())
+    String sheetName = SpreadsheetUtil.createValidSheetName(data.getName())
     exportExcel(file, data, sheetName)
     return sheetName
   }
@@ -60,7 +55,7 @@ class ExcelExporter {
    * @return the actual name of the sheet created (illegal characters replaced by space)
    */
   static String exportExcel(File file, TableMatrix data, String sheetName) {
-    String validSheetName = createValidSheetName(sheetName)
+    String validSheetName = SpreadsheetUtil.createValidSheetName(sheetName)
     if (file.exists() && file.length() > 0) {
       try (FileInputStream fis = new FileInputStream(file)
            Workbook workbook = WorkbookFactory.create(fis)) {
@@ -68,7 +63,7 @@ class ExcelExporter {
         if (sheetNames.contains(validSheetName)) {
           int index = 1
           while (true) {
-            validSheetName = createValidSheetName(validSheetName + index++)
+            validSheetName = SpreadsheetUtil.createValidSheetName(validSheetName + index++)
             if (!sheetNames.contains(validSheetName)) {
               break
             }

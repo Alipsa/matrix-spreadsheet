@@ -1,4 +1,6 @@
-package se.alipsa.groovy.spreadsheet;
+package se.alipsa.groovy.spreadsheet
+
+import org.apache.poi.ss.util.WorkbookUtil;
 
 import java.time.format.DateTimeFormatter;
 
@@ -44,4 +46,7 @@ public class SpreadsheetUtil {
       return sb.reverse().toString()
    }
 
+   static String createValidSheetName(String suggestion) {
+      return WorkbookUtil.createSafeSheetName(suggestion)
+   }
 }

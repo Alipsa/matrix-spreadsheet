@@ -3,6 +3,7 @@ package se.alipsa.groovy.spreadsheet
 import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.DateUtil
 import se.alipsa.groovy.matrix.*
+import static se.alipsa.groovy.spreadsheet.SpreadSheetImporter.validateNotNull
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
@@ -12,13 +13,13 @@ class ExcelImporter {
 
     static TableMatrix importExcelSheet(Map params) {
         def fp = params.getOrDefault('file', null)
+        validateNotNull(fp, 'file')
         String file
         if (fp instanceof File) {
            file = fp.getAbsolutePath()
         } else {
             file = String.valueOf(fp)
         }
-        validateNotNull(file, 'file')
         String sheetName = params.getOrDefault('sheetName', 'Sheet1')
         validateNotNull(sheetName, 'sheetName')
         Integer startRow = params.getOrDefault('startRow',1) as Integer
@@ -147,9 +148,5 @@ class ExcelImporter {
         return TableMatrix.create(colNames, matrix, [Object]*colNames.size())
     }
 
-    static void validateNotNull(Object paramVal, String paramName) {
-        if (paramVal == null) {
-            throw new IllegalArgumentException("$paramName cannot be null")
-        }
-    }
+
 }

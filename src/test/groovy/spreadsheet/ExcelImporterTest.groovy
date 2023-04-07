@@ -1,6 +1,5 @@
 package spreadsheet
 
-import org.apache.poi.ss.usermodel.DateUtil
 import org.junit.jupiter.api.Test
 
 import java.time.LocalDateTime
@@ -11,7 +10,7 @@ import java.time.LocalDate
 import static se.alipsa.groovy.spreadsheet.ExcelImporter.*
 import static org.junit.jupiter.api.Assertions.*
 
-class ImportTest {
+class ExcelImporterTest {
 
     @Test
     void testExcelImport() {

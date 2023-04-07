@@ -8,7 +8,7 @@ plugins {
 }
 
 group 'se.alipsa.groovy'
-version '1.0-SNAPSHOT'
+version '1.0.0-SNAPSHOT'
 description 'Groovy spreadsheet import/export'
 
 repositories {
@@ -17,11 +17,12 @@ repositories {
 }
 
 dependencies {
-    def groovy = 'org.apache.groovy:groovy:4.0.10'
+    def groovy = 'org.apache.groovy:groovy:4.0.11'
     compileOnly groovy
     implementation('se.alipsa.groovy:matrix:1.0.2-SNAPSHOT')
     implementation('org.apache.poi:poi:5.2.3')
     implementation('org.apache.poi:poi-ooxml:5.2.3')
+    implementation 'com.github.miachm.sods:SODS:1.5.3'
 
     testImplementation 'org.apache.logging.log4j:log4j-core:2.20.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
