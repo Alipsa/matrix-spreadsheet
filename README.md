@@ -1,7 +1,9 @@
 # spreadsheet
 Groovy spreadsheet import/export
 
-This library can import and export Excel and Libre/Open Office Calc spreadsheets.
+This Groovy library enables you to import and export Excel and Libre/Open Office Calc spreadsheets.
+It is based on (heavily inspired by) the [Spreadsheets](https://github.com/Alipsa/spreadsheets) library 
+for [Renjin R](https://github.com/bedatadriven/renjin).
 
 To use it, add the following to your gradle build script: 
 ```groovy
