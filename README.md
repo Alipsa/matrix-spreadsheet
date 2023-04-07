@@ -62,6 +62,12 @@ See [the tests](https://github.com/Alipsa/spreadsheet/tree/main/src/test/groovy/
 # Third party libraries used
 Note: only direct dependencies are listed below.
 
+### Groovy
+The environment this library is for. Note that there is no inclusion of Groovy in the jar leaving you free to use
+any (modern) version of Groovy you prefer.
+- URL: https://groovy-lang.org/
+- License: Apache 2.0
+
 ### SODS 
 Used to handle ODS file import and export
 - URL: https://github.com/miachm/SODS
