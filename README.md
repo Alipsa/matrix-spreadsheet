@@ -3,17 +3,20 @@ Groovy spreadsheet import/export
 
 This library can import and export Excel and Libre/Open Office Calc spreadsheets.
 
-To use it, add the following to your gradle build script: `implementation 'se.alipsa.groovy:spreadsheet:1.0.0'`
+To use it, add the following to your gradle build script: 
+```groovy
+implementation 'se.alipsa.groovy:spreadsheet:1.0.0'
+```
 or if you use maven:
 ```xml
-  <dependency>
-    <groupId>se.alipsa.groovy</groupId>
-    <artifactId>spreadsheet</artifactId>
-    <version>1.0.0</version>
+<dependency>
+  <groupId>se.alipsa.groovy</groupId>
+  <artifactId>spreadsheet</artifactId>
+  <version>1.0.0</version>
 </dependency>
 ```
 
-## Importing a spreadsheet
+## Import a spreadsheet
 ```groovy
 import static se.alipsa.groovy.spreadsheet.SpreadSheetImporter.*
 import se.alipsa.groovy.matrix.TableMatrix
