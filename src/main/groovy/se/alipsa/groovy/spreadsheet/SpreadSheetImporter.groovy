@@ -4,7 +4,7 @@ import se.alipsa.groovy.matrix.TableMatrix
 
 class SpreadSheetImporter {
 
-  static TableMatrix importSpreadSheet(String file, String sheetName = 'Sheet1',
+  static TableMatrix importSpreadsheet(String file, String sheetName = 'Sheet1',
                                       int startRow = 1, int endRow,
                                       int startCol = 1, int endCol,
                                       boolean firstRowAsColNames = true) {
@@ -14,7 +14,7 @@ class SpreadSheetImporter {
     return ExcelImporter.importExcelSheet(file, sheetName, startRow, endRow, startCol, endCol, firstRowAsColNames)
   }
 
-  static TableMatrix importSpreadSheet(String file, String sheetName = 'Sheet1',
+  static TableMatrix importSpreadsheet(String file, String sheetName = 'Sheet1',
                                       int startRow = 1, int endRow,
                                       String startCol = 'A', String endCol,
                                       boolean firstRowAsColNames = true) {
@@ -24,7 +24,7 @@ class SpreadSheetImporter {
     return ExcelImporter.importExcelSheet(file, sheetName, startRow, endRow, startCol, endCol, firstRowAsColNames)
   }
 
-  static TableMatrix importSpreadSheet(Map params) {
+  static TableMatrix importSpreadsheet(Map params) {
     def fp = params.getOrDefault('file', null)
     validateNotNull(fp, 'file')
     String file

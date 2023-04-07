@@ -11,7 +11,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory
 
 class ExcelImporter {
 
-    static TableMatrix importExcelSheet(Map params) {
+    static TableMatrix importExcel(Map params) {
         def fp = params.getOrDefault('file', null)
         validateNotNull(fp, 'file')
         String file
@@ -62,12 +62,12 @@ class ExcelImporter {
      * it column names will be v1, v2 etc. Defaults to true
      * @return A TableMatrix with the excel data.
      */
-    static TableMatrix importExcelSheet(String file, String sheetName = 'Sheet1',
+    static TableMatrix importExcel(String file, String sheetName = 'Sheet1',
                                         int startRow = 1, int endRow,
                                         String startCol = 'A', String endCol,
                                         boolean firstRowAsColNames = true) {
 
-        return importExcelSheet(
+        return importExcel(
                 file,
                 sheetName,
                 startRow as int,
@@ -78,7 +78,7 @@ class ExcelImporter {
         )
     }
 
-    static TableMatrix importExcelSheet(String file, String sheetName = 'Sheet1',
+    static TableMatrix importExcel(String file, String sheetName = 'Sheet1',
                                           int startRow = 1, int endRow,
                                           int startCol = 1, int endCol,
                                           boolean firstRowAsColNames = true) {
@@ -94,7 +94,7 @@ class ExcelImporter {
                     header.add(String.valueOf(i))
                 }
             }
-            return importExcel(sheet, startRow, endRow, startCol, endCol, header)
+            return importExcelSheet(sheet, startRow, endRow, startCol, endCol, header)
         }
     }
 
@@ -109,7 +109,7 @@ class ExcelImporter {
         }
     }
 
-    private static TableMatrix importExcel(Sheet sheet, int startRowNum, int endRowNum, int startColNum, int endColNum, List<String> colNames) {
+    private static TableMatrix importExcelSheet(Sheet sheet, int startRowNum, int endRowNum, int startColNum, int endColNum, List<String> colNames) {
         startRowNum--
         endRowNum--
         startColNum--

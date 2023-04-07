@@ -5,14 +5,14 @@ import se.alipsa.groovy.matrix.TableMatrix
 
 class SpreadSheetExporter {
 
-  static String exportSpreadSheet(File file, TableMatrix data) {
+  static String exportSpreadsheet(File file, TableMatrix data) {
     if (file.getName().toLowerCase().endsWith(".ods")) {
       return OdsExporter.exportOds(file, data)
     }
     return ExcelExporter.exportExcel(file, data)
   }
 
-  static String exportSpreadSheet(File file, TableMatrix data, String sheetName) {
+  static String exportSpreadsheet(File file, TableMatrix data, String sheetName) {
     if (file.getName().toLowerCase().endsWith(".ods")) {
       return OdsExporter.exportOds(file, data, sheetName)
     }

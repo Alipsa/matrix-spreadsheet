@@ -46,10 +46,10 @@ class ExportTest {
 
     //println(table.content())
     def file = File.createTempFile("matrix", ".xlsx")
-    SpreadSheetExporter.exportSpreadSheet(file, table)
+    SpreadSheetExporter.exportSpreadsheet(file, table)
     println("Wrote to $file")
 
-    SpreadSheetExporter.exportSpreadSheet(file, table2)
+    SpreadSheetExporter.exportSpreadsheet(file, table2)
     println("Wrote another sheet to $file")
     try ( def reader = new ExcelReader(file)) {
       assertEquals(2, reader.sheetNames.size(), "number of sheets")
@@ -62,12 +62,12 @@ class ExportTest {
     if (odsFile.exists()) {
       odsFile.delete()
     }
-    SpreadSheetExporter.exportSpreadSheet(odsFile, table, "Sheet 1")
+    SpreadSheetExporter.exportSpreadsheet(odsFile, table, "Sheet 1")
     println("Wrote to $odsFile")
     try ( def reader = new OdsReader(odsFile)) {
       assertEquals(1, reader.sheetNames.size(), "number of sheets")
     }
-    SpreadSheetExporter.exportSpreadSheet(odsFile, table2, "Sheet 2")
+    SpreadSheetExporter.exportSpreadsheet(odsFile, table2, "Sheet 2")
     println("Wrote another sheet to $odsFile")
     try ( def reader = new OdsReader(odsFile)) {
       assertEquals(2, reader.sheetNames.size(), "number of sheets")

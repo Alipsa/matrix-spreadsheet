@@ -14,7 +14,7 @@ class ExcelImporterTest {
 
     @Test
     void testExcelImport() {
-        def table = importExcelSheet(file: "Book1.xlsx", endRow: 11, endCol: 4, firstRowAsColNames: true)
+        def table = importExcel(file: "Book1.xlsx", endRow: 11, endCol: 4, firstRowAsColNames: true)
         table = table.convert(id: Integer, bar: LocalDate, baz: BigDecimal, DateTimeFormatter.ofPattern('yyyy-MM-dd HH:mm:ss.SSS'))
         //println(table.content())
         assertEquals(3, table[2, 0])
@@ -25,7 +25,7 @@ class ExcelImporterTest {
 
     @Test
     void TestImportWithColnames() {
-        def table = importExcelSheet(
+        def table = importExcel(
                 "file": "Book1.xlsx",
                 "endRow": 11,
                 "startCol": 'A',
