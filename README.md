@@ -59,6 +59,21 @@ def file = File.createTempFile("matrix", ".xlsx")
 SpreadSheetExporter.exportSpreadSheet(file, table)
 ```
 
+## Inquire about spreadsheet content
+The SpreadsheetReader is an autocloseable class that can help you find various information about the
+content e.g. where certain rows and columns are located. Here's an example:
+```groovy
+import se.alipsa.groovy.spreadsheet.*
+
+File spreadsheet = new File("/some/path/to/excel_or_ods_file")
+try (SpreadsheetReader reader = SpreadsheetReader.Factory.create(spreadsheet)) {
+  lastRow = reader.findLastRow(1)
+  endCol = reader.findLastCol(1)
+  // search For the first cell with the value 'Name' in sheet 1 in the A column:
+  firstRow = reader.findRowNum(1, 'A', 'Name') 
+}
+```
+
 See [the tests](https://github.com/Alipsa/spreadsheet/tree/main/src/test/groovy/spreadsheet) for more usage examples!
 
 # Third party libraries used

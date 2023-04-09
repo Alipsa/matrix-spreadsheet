@@ -1,4 +1,4 @@
-package se.alipsa.groovy.spreadsheet
+package se.alipsa.groovy.spreadsheet.excel
 
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.util.IOUtils
 import se.alipsa.groovy.matrix.TableMatrix
 import se.alipsa.groovy.matrix.ValueConverter
+import se.alipsa.groovy.spreadsheet.SpreadsheetUtil
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -83,8 +84,44 @@ class ExcelExporter {
     return validSheetName
   }
 
+  static List<String> exportExcelSheets(String filePath, List<TableMatrix> data, List<String> sheetNames) {
+    return exportExcelSheets(new File(filePath), data, sheetNames)
+  }
+
+  static List<String> exportExcelSheets(File file, List<TableMatrix> data, List<String> sheetNames) throws IOException {
+    try {
+      Workbook workbook
+      FileInputStream fis = null
+      if (file.exists()) {
+        fis = new FileInputStream(file)
+        workbook = WorkbookFactory.create(fis)
+      } else {
+        workbook = WorkbookFactory.create(isXssf(file))
+      }
+
+      List<String> actualSheetNames = []
+      for (int i = 0; i < data.size(); i++) {
+        TableMatrix dataFrame = data.get(i)
+        String sheetName = sheetNames.toArray()[i]
+        actualSheetNames.add(upsertSheet(dataFrame, sheetName, workbook))
+      }
+      if (fis != null) {
+        fis.close()
+      }
+      writeFile(file, workbook)
+      return actualSheetNames
+    } catch (IOException e) {
+      logger.error("Failed to create excel file {}" + file.getAbsolutePath(), e)
+      throw new IOException("Failed to create excel file ${file}", e)
+    }
+  }
+
   private static boolean isXssf(File file) {
-    return !file.getName().toLowerCase().endsWith(".xls");
+    return isXssf(file.getName())
+  }
+  private static boolean isXssf(String filePath) {
+    return !filePath.toLowerCase().endsWith(".xls")
+
   }
 
   private static void buildSheet(TableMatrix data, Sheet sheet) {
@@ -137,6 +174,15 @@ class ExcelExporter {
       }
       rowIdx++
     }
+  }
+
+  private static String upsertSheet(TableMatrix dataFrame, String sheetName, Workbook workbook) {
+    Sheet sheet = workbook.getSheet(sheetName)
+    if (sheet == null) {
+      sheet = workbook.createSheet(SpreadsheetUtil.createValidSheetName(sheetName))
+    }
+    buildSheet(dataFrame, sheet)
+    return sheet.getSheetName()
   }
 
   private static void writeFile(File file, Workbook workbook) throws IOException {

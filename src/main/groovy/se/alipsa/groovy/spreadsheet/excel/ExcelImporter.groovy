@@ -1,9 +1,13 @@
-package se.alipsa.groovy.spreadsheet
+package se.alipsa.groovy.spreadsheet.excel
 
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.DateUtil
 import se.alipsa.groovy.matrix.*
-import static se.alipsa.groovy.spreadsheet.SpreadSheetImporter.validateNotNull
+import se.alipsa.groovy.spreadsheet.FileUtil
+import se.alipsa.groovy.spreadsheet.SpreadsheetUtil
+
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
@@ -11,45 +15,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory
 
 class ExcelImporter {
 
-    static TableMatrix importExcel(Map params) {
-        def fp = params.getOrDefault('file', null)
-        validateNotNull(fp, 'file')
-        String file
-        if (fp instanceof File) {
-           file = fp.getAbsolutePath()
-        } else {
-            file = String.valueOf(fp)
-        }
-        String sheetName = params.getOrDefault('sheetName', 'Sheet1')
-        validateNotNull(sheetName, 'sheetName')
-        Integer startRow = params.getOrDefault('startRow',1) as Integer
-        validateNotNull(startRow, 'startRow')
-        Integer endRow = params.getOrDefault('endRow', null) as Integer
-        validateNotNull(endRow, 'endRow')
-        def startCol = params.getOrDefault('startCol', 1)
-        if (startCol instanceof String) {
-            startCol = SpreadsheetUtil.asColumnNumber(startCol)
-        }
-        validateNotNull(startCol, 'startCol')
-        def endCol = params.get('endCol')
-        if (endCol instanceof String) {
-            endCol = SpreadsheetUtil.asColumnNumber(endCol)
-        }
-        validateNotNull(endCol, 'endCol')
-        Boolean firstRowAsColNames = params.getOrDefault('firstRowAsColNames', true) as Boolean
-        validateNotNull(firstRowAsColNames, 'firstRowAsColNames')
-
-        return importExcelSheet(
-                file,
-                sheetName,
-                startRow as int,
-                endRow as int,
-                startCol as int,
-                endCol as int,
-                firstRowAsColNames as boolean
-        )
-    }
-
+    private static Logger log = LogManager.getLogger()
     /**
      * Import an excel spreadsheet
      * @param file the filePath or the file object pointing to the excel file
@@ -75,6 +41,41 @@ class ExcelImporter {
                 SpreadsheetUtil.asColumnNumber(startCol) as int,
                 SpreadsheetUtil.asColumnNumber(endCol) as int,
                 firstRowAsColNames as boolean
+        )
+    }
+
+    static TableMatrix importExcel(String file, int sheetNumber,
+                                   int startRow = 1, int endRow,
+                                   int startCol = 1, int endCol,
+                                   boolean firstRowAsColNames = true) {
+        def header = []
+        File excelFile = FileUtil.checkFilePath(file);
+        try (Workbook workbook = WorkbookFactory.create(excelFile)) {
+            Sheet sheet = workbook.getSheetAt(sheetNumber)
+            if (firstRowAsColNames) {
+                buildHeaderRow(startRow, startCol, endCol, header, sheet)
+                startRow = startRow + 1
+            } else {
+                for (int i = 1; i <= endCol - startCol; i++) {
+                    header.add(String.valueOf(i))
+                }
+            }
+            return importExcelSheet(sheet, startRow, endRow, startCol, endCol, header)
+        }
+    }
+
+    static TableMatrix importExcel(String file, int sheet,
+                                       int startRow = 1, int endRow,
+                                       String startColumn = 'A', String endColumn,
+                                       boolean firstRowAsColNames = true) {
+        return importExcel(
+            file,
+            sheet,
+            startRow,
+            endRow,
+            SpreadsheetUtil.asColumnNumber(startColumn),
+            SpreadsheetUtil.asColumnNumber(endColumn),
+            firstRowAsColNames
         )
     }
 
@@ -120,6 +121,10 @@ class ExcelImporter {
         List<?> rowList
         for (int rowIdx = startRowNum; rowIdx <= endRowNum; rowIdx++) {
             Row row = sheet.getRow(rowIdx)
+            if (row == null) {
+                log.warn("Row ${rowIdx + 1} is null")
+                continue
+            }
             rowList = []
             for (int colIdx = startColNum; colIdx <= endColNum; colIdx++) {
                 def cell = row.getCell(colIdx)
@@ -147,6 +152,4 @@ class ExcelImporter {
         }
         return TableMatrix.create(colNames, matrix, [Object]*colNames.size())
     }
-
-
 }

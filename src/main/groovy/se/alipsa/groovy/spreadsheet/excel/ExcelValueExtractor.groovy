@@ -1,6 +1,8 @@
-package se.alipsa.groovy.spreadsheet;
+package se.alipsa.groovy.spreadsheet.excel;
 
 import org.apache.poi.ss.usermodel.*
+import se.alipsa.groovy.spreadsheet.SpreadsheetUtil
+import se.alipsa.groovy.spreadsheet.ValueExtractor
 
 import java.time.LocalDateTime;
 

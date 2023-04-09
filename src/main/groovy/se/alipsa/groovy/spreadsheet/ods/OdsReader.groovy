@@ -1,12 +1,15 @@
-package se.alipsa.groovy.spreadsheet
+package se.alipsa.groovy.spreadsheet.ods
 
 import com.github.miachm.sods.Sheet
 import com.github.miachm.sods.SpreadSheet
+import se.alipsa.groovy.spreadsheet.FileUtil
+import se.alipsa.groovy.spreadsheet.SpreadsheetReader
+import se.alipsa.groovy.spreadsheet.SpreadsheetUtil
 
 /**
  * Extract various information from a Calc (ods) file.
  */
-class OdsReader implements Closeable {
+class OdsReader implements SpreadsheetReader {
 
    private SpreadSheet spreadSheet
 
@@ -27,6 +30,7 @@ class OdsReader implements Closeable {
     * @return the Row as seen in Calc (1 is first row)
     * @throws Exception if something goes wrong
     */
+   @Override
    int findRowNum(int sheetNumber, int colNumber, String content) throws Exception {
       Sheet sheet = spreadSheet.getSheet(sheetNumber -1)
       return findRowNum(sheet, colNumber, content)
@@ -41,6 +45,7 @@ class OdsReader implements Closeable {
     * @return the Row as seen in Calc (1 is first row)
     * @throws Exception if something goes wrong
     */
+   @Override
    int findRowNum(int sheetNumber, String colName, String content) throws Exception {
       return findRowNum(sheetNumber, SpreadsheetUtil.asColumnNumber(colName), content)
    }
@@ -54,6 +59,7 @@ class OdsReader implements Closeable {
     * @return the Row as seen in Calc (1 is first row)
     * @throws Exception if something goes wrong
     */
+   @Override
    int findRowNum(String sheetName, String colName, String content) throws Exception {
       return findRowNum(sheetName, SpreadsheetUtil.asColumnNumber(colName), content)
    }
@@ -67,6 +73,7 @@ class OdsReader implements Closeable {
     * @return the Row as seen in Excel (1 is first row)
     * @throws Exception if something goes wrong
     */
+   @Override
    int findRowNum(String sheetName, int colNumber, String content) throws Exception {
       Sheet sheet = spreadSheet.getSheet(sheetName)
       return findRowNum(sheet, colNumber, content)
@@ -78,7 +85,7 @@ class OdsReader implements Closeable {
 
       for (int rowCount = 0; rowCount < sheet.getDataRange().getLastRow(); rowCount ++) {
          //System.out.println(rowCount + ": " + ext.getString(rowCount, poiColNum));
-         if (content.equals(ext.getString(rowCount, poiColNum))) {
+         if (content == ext.getString(rowCount, poiColNum)) {
             return rowCount + 1
          }
       }
@@ -94,6 +101,7 @@ class OdsReader implements Closeable {
     * @return the row number that matched or -1 if not found
     * @throws Exception if some read problem occurs
     */
+   @Override
    int findColNum(int sheetNumber, int rowNumber, String content) throws Exception {
       Sheet sheet = spreadSheet.getSheet(sheetNumber - 1)
       return findColNum(sheet, rowNumber, content)
@@ -107,6 +115,7 @@ class OdsReader implements Closeable {
     * @return the row number that matched or -1 if not found
     * @throws Exception if the file cannot be read
     */
+   @Override
    int findColNum(String sheetName, int rowNumber, String content) throws Exception {
       Sheet sheet = spreadSheet.getSheet(sheetName)
       return findColNum(sheet, rowNumber, content)
@@ -124,6 +133,35 @@ class OdsReader implements Closeable {
       return -1;
    }
 
+   @Override
+   int findLastRow(int sheetNum) {
+      findLastRow(spreadSheet.getSheet(sheetNum -1))
+   }
+
+   @Override
+   int findLastRow(String sheetName) {
+      findLastRow(spreadSheet.getSheet(sheetName))
+   }
+
+   int findLastRow(Sheet sheet) {
+      sheet.getDataRange().getLastRow() + 1
+   }
+
+   @Override
+   int findLastCol(int sheetNum) {
+      findLastCol(spreadSheet.getSheet(sheetNum -1))
+   }
+
+   @Override
+   int findLastCol(String sheetName) {
+      findLastCol(spreadSheet.getSheet(sheetName))
+   }
+
+   int findLastCol(Sheet sheet) {
+      sheet.getDataRange().getLastColumn() + 1
+   }
+
+   @Override
    List<String> getSheetNames() throws Exception {
       List<String> names = new ArrayList<>()
       spreadSheet.getSheets().forEach(s -> names.add(s.getName()))

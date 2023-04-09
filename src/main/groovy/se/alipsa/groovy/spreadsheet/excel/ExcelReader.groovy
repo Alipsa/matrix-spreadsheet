@@ -1,12 +1,15 @@
-package se.alipsa.groovy.spreadsheet
+package se.alipsa.groovy.spreadsheet.excel
 
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.WorkbookFactory
+import se.alipsa.groovy.spreadsheet.FileUtil
+import se.alipsa.groovy.spreadsheet.SpreadsheetReader
+import se.alipsa.groovy.spreadsheet.SpreadsheetUtil
 
-class ExcelReader implements Closeable {
+class ExcelReader implements SpreadsheetReader  {
     private Workbook workbook;
 
     ExcelReader(File excelFile) {
@@ -20,12 +23,9 @@ class ExcelReader implements Closeable {
     /**
      * @return a List of the names of the sheets in the excel
      */
+    @Override
     List<String> getSheetNames() throws Exception {
-        List<String> names = new ArrayList<>();
-        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-            names.add(workbook.getSheetAt(i).getSheetName());
-        }
-        return names
+        return getSheetNames(workbook)
     }
 
     static List<String> getSheetNames(Workbook workbook) throws Exception {
@@ -44,6 +44,7 @@ class ExcelReader implements Closeable {
      * @return the Row as seen in Excel (1 is first row)
      * @throws Exception if something goes wrong
      */
+    @Override
     int findRowNum(int sheetNumber, int colNumber, String content) {
         Sheet sheet = workbook.getSheetAt(sheetNumber -1)
         return findRowNum(sheet, colNumber, content)
@@ -55,9 +56,16 @@ class ExcelReader implements Closeable {
      * @param content the string to search for
      * @return the Row as seen in Excel (1 is first row)
      */
+    @Override
     int findRowNum(String sheetName, int colNumber, String content) {
         Sheet sheet = workbook.getSheet(sheetName)
         return findRowNum(sheet, colNumber, content)
+    }
+
+    @Override
+    int findRowNum(int sheetNumber, String colName, String content) throws Exception {
+        Sheet sheet = workbook.getSheetAt(sheetNumber -1)
+        return findRowNum(sheet, SpreadsheetUtil.asColumnNumber(colName), content)
     }
 
     /**
@@ -67,6 +75,7 @@ class ExcelReader implements Closeable {
      * @param content the string to search for
      * @return the Row as seen in Excel (1 is first row)
      */
+    @Override
     int findRowNum(String sheetName, String colName, String content) {
         Sheet sheet = workbook.getSheet(sheetName)
         return findRowNum(sheet, SpreadsheetUtil.asColumnNumber(colName), content)
@@ -100,6 +109,7 @@ class ExcelReader implements Closeable {
      * @param content the string to search for
      * @return the row number that matched or -1 if not found
      */
+    @Override
     int findColNum(int sheetNumber, int rowNumber, String content) {
         Sheet sheet = workbook.getSheetAt(sheetNumber - 1)
         return findColNum(sheet, rowNumber, content)
@@ -111,6 +121,7 @@ class ExcelReader implements Closeable {
      * @param content the string to search for
      * @return the row number that matched or -1 if not found
      */
+    @Override
     int findColNum(String sheetName, int rowNumber, String content) {
         Sheet sheet = workbook.getSheet(sheetName)
         return findColNum(sheet, rowNumber, content)
@@ -135,6 +146,44 @@ class ExcelReader implements Closeable {
             }
         }
         return -1
+    }
+
+    @Override
+    int findLastRow(int sheetNum) {
+        findLastRow(workbook.getSheetAt(sheetNum -1))
+    }
+
+    @Override
+    int findLastRow(String sheetName) {
+        findLastRow(workbook.getSheet(sheetName))
+    }
+
+    int findLastRow(Sheet sheet) {
+        sheet.getLastRowNum()
+    }
+
+    @Override
+    int findLastCol(int sheetNum) {
+        findLastCol(workbook.getSheetAt(sheetNum -1))
+    }
+
+    @Override
+    int findLastCol(String sheetName) {
+        findLastCol(workbook.getSheet(sheetName))
+    }
+
+    int findLastCol(Sheet sheet, int numRowsToScan = 10) {
+        Iterator it = sheet.rowIterator()
+        int rowCount = 0
+        int maxColumn = -1
+        while (it.hasNext() && rowCount++ < numRowsToScan) {
+            def row = it.next()
+            def ncol = row.getLastCellNum()
+            if (ncol > maxColumn) {
+                maxColumn = ncol
+            }
+        }
+        return maxColumn
     }
 
     @Override

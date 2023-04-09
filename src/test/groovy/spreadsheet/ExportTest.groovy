@@ -2,12 +2,9 @@ package spreadsheet
 
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import se.alipsa.groovy.matrix.ConversionException
 import se.alipsa.groovy.matrix.TableMatrix
-import se.alipsa.groovy.spreadsheet.ExcelExporter
-import se.alipsa.groovy.spreadsheet.ExcelReader
-import se.alipsa.groovy.spreadsheet.OdsReader
-import se.alipsa.groovy.spreadsheet.SpreadSheetExporter
+import se.alipsa.groovy.spreadsheet.SpreadsheetReader
+import se.alipsa.groovy.spreadsheet.SpreadsheetExporter
 import se.alipsa.groovy.spreadsheet.SpreadsheetUtil
 
 import java.time.LocalDate
@@ -46,30 +43,30 @@ class ExportTest {
 
     //println(table.content())
     def file = File.createTempFile("matrix", ".xlsx")
-    SpreadSheetExporter.exportSpreadsheet(file, table)
+    SpreadsheetExporter.exportSpreadsheet(file, table)
     println("Wrote to $file")
 
-    SpreadSheetExporter.exportSpreadsheet(file, table2)
+    SpreadsheetExporter.exportSpreadsheet(file, table2)
     println("Wrote another sheet to $file")
-    try ( def reader = new ExcelReader(file)) {
+    try ( def reader = SpreadsheetReader.Factory.create(file)) {
       assertEquals(2, reader.sheetNames.size(), "number of sheets")
     }
   }
 
   @Test
   void testOdsExport() {
-    def odsFile = File.createTempFile("matrix", ".ods")
+    File odsFile = File.createTempFile("matrix", ".ods")
     if (odsFile.exists()) {
       odsFile.delete()
     }
-    SpreadSheetExporter.exportSpreadsheet(odsFile, table, "Sheet 1")
+    SpreadsheetExporter.exportSpreadsheet(odsFile, table, "Sheet 1")
     println("Wrote to $odsFile")
-    try ( def reader = new OdsReader(odsFile)) {
+    try ( def reader = SpreadsheetReader.Factory.create(odsFile)) {
       assertEquals(1, reader.sheetNames.size(), "number of sheets")
     }
-    SpreadSheetExporter.exportSpreadsheet(odsFile, table2, "Sheet 2")
+    SpreadsheetExporter.exportSpreadsheet(odsFile, table2, "Sheet 2")
     println("Wrote another sheet to $odsFile")
-    try ( def reader = new OdsReader(odsFile)) {
+    try ( def reader = SpreadsheetReader.Factory.create(odsFile)) {
       assertEquals(2, reader.sheetNames.size(), "number of sheets")
     }
   }

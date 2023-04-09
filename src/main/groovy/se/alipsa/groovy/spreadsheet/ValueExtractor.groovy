@@ -1,95 +1,91 @@
-package se.alipsa.groovy.spreadsheet;
+package se.alipsa.groovy.spreadsheet
 
-import java.text.NumberFormat;
-import java.text.ParseException;
+import java.text.NumberFormat
+import java.text.ParseException
 
 /**
  * A ValueExtractor is a helper class that makes it easier to get values from a spreadsheet.
  */
-public abstract class ValueExtractor {
+abstract class ValueExtractor {
 
-   protected NumberFormat percentFormat = NumberFormat.getPercentInstance();
+   protected NumberFormat percentFormat = NumberFormat.getPercentInstance()
 
-   public Double getDouble(Object val) {
+   Double getDouble(Object val) {
       if (val == null) {
-         //return 0;
-         return null;
+         return null
       }
       if (val instanceof Double) {
-         return (Double) val;
+         return (Double) val
       }
-      String strVal = val.toString();
+      String strVal = val.toString()
       try {
          return Double.parseDouble(strVal);
       } catch (NumberFormatException e) {
          try {
-            percentFormat.parse(strVal).doubleValue();
+            percentFormat.parse(strVal).doubleValue()
          } catch (ParseException ignored) {
             // do nothing
          }
-         //return 0;
-         return null;
+         return null
       }
    }
 
-   public Double getPercentage(Object val) {
+   Double getPercentage(Object val) {
       if (val == null) {
-         return null;
+         return null
       }
       if (val instanceof Double) {
-         return (Double) val;
+         return (Double) val
       }
       String strVal = val.toString();
       if (strVal.contains("%")) {
          try {
             return percentFormat.parse(strVal).doubleValue();
          } catch (ParseException e) {
-            return null;
+            return null
          }
       } else {
-         return Double.parseDouble(strVal);
+         return Double.parseDouble(strVal)
       }
    }
 
-   public Integer getInt(Object objVal) {
+   Integer getInt(Object objVal) {
       if (objVal == null) {
-         //return Integer.MIN_VALUE;
-         return null;
+         return null
       }
       if (objVal instanceof Double) {
-         return (int)(Math.round((Double) objVal));
+         return (int)(Math.round((Double) objVal))
       }
       if (objVal instanceof Boolean) {
-         return (boolean)objVal ? 1 : 0;
+         return (boolean)objVal ? 1 : 0
       }
-      return Integer.parseInt(objVal.toString());
+      return Integer.parseInt(objVal.toString())
    }
 
-   public Long getLong(Object objVal) {
+   Long getLong(Object objVal) {
       if (objVal == null) {
-         //return Long.MIN_VALUE;
-         return null;
+         return null
       }
       if (objVal instanceof Double) {
-         return (Math.round((Double) objVal));
+         return (Math.round((Double) objVal))
       }
       if (objVal instanceof Boolean) {
-         return (boolean)objVal ? 1L : 0L;
+         return (boolean)objVal ? 1L : 0L
       }
-      return Long.parseLong(objVal.toString());
+      return Long.parseLong(objVal.toString())
    }
 
-   public Boolean getBoolean(Object val) {
+   Boolean getBoolean(Object val) {
       if (val == null || "".equals(val)) {
-         return null;
+         return null
       }
       if (val instanceof Boolean) {
-         return (Boolean) val;
+         return (Boolean) val
       } else if (val instanceof Number) {
-         int num = (int)Math.round(((Number)val).doubleValue());
-         return num == 1;
+         int num = (int)Math.round(((Number)val).doubleValue())
+         return num == 1
       } else {
-         String strVal = String.valueOf(val).toLowerCase();
+         String strVal = String.valueOf(val).toLowerCase()
          switch (strVal) {
             case "j":
             case "y":
@@ -98,14 +94,14 @@ public abstract class ValueExtractor {
             case "1":
             case "true":
             case "on":
-               return true;
+               return true
             default:
-               return false;
+               return false
          }
       }
    }
 
-   public String getString(Object val) {
-      return val == null ? null : String.valueOf(val);
+   String getString(Object val) {
+      return val == null ? null : String.valueOf(val)
    }
 }

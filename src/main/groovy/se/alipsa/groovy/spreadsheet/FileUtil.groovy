@@ -1,12 +1,6 @@
-package se.alipsa.groovy.spreadsheet;
+package se.alipsa.groovy.spreadsheet
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Paths
 
 /**
  * Common file utilities
@@ -24,20 +18,20 @@ class FileUtil {
     * @throws Exception if the filePath cannot be found
     */
    static File checkFilePath(String filePath) throws Exception {
-      File excelFile;
-      URL url = getResourceUrl(filePath);
+      File excelFile
+      URL url = getResourceUrl(filePath)
       if (url == null) {
-         throw new Exception(filePath + " does not exist");
+         throw new Exception(filePath + " does not exist")
       }
       try {
-         excelFile = Paths.get(url.toURI()).toFile();
+         excelFile = Paths.get(url.toURI()).toFile()
       } catch (URISyntaxException | RuntimeException e) {
-         throw new Exception(filePath + " does not exist");
+         throw new Exception(filePath + " does not exist", e)
       }
       if (!excelFile.exists()) {
-         throw new Exception(filePath + " does not exist");
+         throw new Exception(filePath + " does not exist")
       }
-      return excelFile;
+      return excelFile
    }
 
    /**
@@ -48,33 +42,33 @@ class FileUtil {
     * @return an url to the resource or null if not found
     */
    static URL getResourceUrl(String resource) {
-      final List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
-      classLoaders.add(Thread.currentThread().getContextClassLoader());
-      classLoaders.add(FileUtil.class.getClassLoader());
+      final List<ClassLoader> classLoaders = new ArrayList<ClassLoader>()
+      classLoaders.add(Thread.currentThread().getContextClassLoader())
+      classLoaders.add(FileUtil.class.getClassLoader())
 
       for (ClassLoader classLoader : classLoaders) {
-         final URL url = getResourceWith(classLoader, resource);
+         final URL url = getResourceWith(classLoader, resource)
          if (url != null) {
-            return url;
+            return url
          }
       }
 
-      final URL systemResource = ClassLoader.getSystemResource(resource);
+      final URL systemResource = ClassLoader.getSystemResource(resource)
       if (systemResource != null) {
-         return systemResource;
+         return systemResource
       } else {
          try {
-            return new File(resource).toURI().toURL();
-         } catch (MalformedURLException e) {
-            return null;
+            return new File(resource).toURI().toURL()
+         } catch (MalformedURLException ignored) {
+            return null
          }
       }
    }
 
    private static URL getResourceWith(ClassLoader classLoader, String resource) {
       if (classLoader != null) {
-         return classLoader.getResource(resource);
+         return classLoader.getResource(resource)
       }
-      return null;
+      return null
    }
 }

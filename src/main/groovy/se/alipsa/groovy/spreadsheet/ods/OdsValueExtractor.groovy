@@ -1,7 +1,9 @@
-package se.alipsa.groovy.spreadsheet;
+package se.alipsa.groovy.spreadsheet.ods;
 
 import com.github.miachm.sods.Range;
-import com.github.miachm.sods.Sheet;
+import com.github.miachm.sods.Sheet
+import se.alipsa.groovy.spreadsheet.SpreadsheetUtil
+import se.alipsa.groovy.spreadsheet.ValueExtractor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,15 +36,19 @@ public class OdsValueExtractor extends ValueExtractor {
       return getInt(sheet.getRange(row, column))
    }
 
-   public int getInt(Range range) {
+   int getInt(Range range) {
       return getInt(range.getValue())
    }
 
-   public String getString(int row, int column) {
-      return getString(sheet.getRange(row, column))
+   String getString(int row, int column) {
+      try {
+         return getString(sheet.getRange(row, column))
+      } catch (IndexOutOfBoundsException e) {
+         throw new IndexOutOfBoundsException("Failed to get String at row $row, col $column: ${e.getMessage()}")
+      }
    }
 
-   public String getString(Range range) {
+   String getString(Range range) {
       Object val = range.getValue()
       if (val instanceof LocalDateTime) {
          return SpreadsheetUtil.dateTimeFormatter.format((LocalDateTime)val)
