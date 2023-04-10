@@ -20,10 +20,10 @@ or if you use maven:
 
 ## Import a spreadsheet
 ```groovy
-import static se.alipsa.groovy.spreadsheet.SpreadSheetImporter.*
+import se.alipsa.groovy.spreadsheet.*
 import se.alipsa.groovy.matrix.TableMatrix
 
-TableMatrix table = importSpreadSheet(file: "Book1.xlsx", endRow: 11, endCol: 4)
+TableMatrix table = SpreadsheetImporter.importSpreadsheet(file: "Book1.xlsx", endRow: 11, endCol: 4)
 ```
 The SpreadSheetImporter.importSpreadSheetSheet takes the following parameters:
 - _file_ the filePath or the file object pointing to the Excel file
@@ -34,6 +34,8 @@ The SpreadSheetImporter.importSpreadSheetSheet takes the following parameters:
 - _endCol_ the end column name (K, L etc) or column number (11, 12 etc.)
 - _firstRowAsColNames_ whether the first row should be used for the names of each column, if false the column names will be v1, v2 etc. Defaults to true
 
+See [the Matrix package](https://github.com/Alipsa/matrix) for more information on what you can do with a TableMatrix.
+
 ## Export a spreadsheet
 
 ```groovy
@@ -42,12 +44,13 @@ import se.alipsa.groovy.matrix.TableMatrix
 import se.alipsa.groovy.spreadsheet.SpreadSheetExporter
 import java.time.format.DateTimeFormatter
 
+def dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 def table = TableMatrix.create(
     [
         id: [null,2,3,4,-5],
         name: ['foo', 'bar', 'baz', 'bla', null],
         start: toLocalDates('2021-01-04', null, '2023-03-13', '2024-04-15', '2025-05-20'),
-        end: toLocalDateTimes(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"), '2021-02-04 12:01:22', '2022-03-12 13:14:15', '2023-04-13 15:16:17', null, '2025-06-20 17:18:19'),
+        end: toLocalDateTimes(dateFormat, '2021-02-04 12:01:22', '2022-03-12 13:14:15', '2023-04-13 15:16:17', null, '2025-06-20 17:18:19'),
         measure: [12.45, null, 14.11, 15.23, 10.99],
         active: [true, false, null, true, false]
     ]
@@ -57,6 +60,23 @@ def file = File.createTempFile("matrix", ".xlsx")
 
 // Export the TableMatrix to an excel file
 SpreadSheetExporter.exportSpreadSheet(file, table)
+```
+
+## Export to multiple sheets
+
+```groovy
+import se.alipsa.groovy.spreadsheet.*
+
+// get data from somewhere
+TableMatrix revenuePerYearMonth = getRevenue() 
+TableMatrix details = getSalesDetails()
+
+SpreadsheetExporter.exportSpreadsheets(
+    // The file extension (.xls, .xlsx, .ods) determines the type (Excel or Calc)
+  file: new File("/some/path/sales.ods"),
+  data: [revenuePerYearMonth, details],
+  sheetNames: ['monthly', 'details']
+)
 ```
 
 ## Inquire about spreadsheet content
