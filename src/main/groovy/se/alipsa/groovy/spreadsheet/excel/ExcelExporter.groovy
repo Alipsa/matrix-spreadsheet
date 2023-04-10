@@ -147,18 +147,18 @@ class ExcelExporter {
         Class type = data.columnType(col)
 
         if (type in [double, Double, BigDecimal, float, Float, Long, long, BigInteger, Number]) {
-          cell.setCellValue(ValueConverter.toDouble(matrixRow[col]))
+          cell.setCellValue(ValueConverter.asDouble(matrixRow[col]))
         } else if (type in [int, Integer, short, Short]) {
-          cell.setCellValue(ValueConverter.toInteger(matrixRow[col]))
+          cell.setCellValue(ValueConverter.asInteger(matrixRow[col]))
         } else if (type in [byte, Byte]) {
           cell.setCellValue(matrixRow[col] as Byte)
         } else if (boolean == type || Boolean == type) {
-          cell.setCellValue(ValueConverter.toBoolean(matrixRow[col]))
+          cell.setCellValue(ValueConverter.asBoolean(matrixRow[col]))
         } else if (LocalDate == type) {
-          cell.setCellValue(ValueConverter.toLocalDate(matrixRow[col]))
+          cell.setCellValue(ValueConverter.asLocalDate(matrixRow[col]))
           cell.setCellStyle(localDateStyle)
         } else if (LocalDateTime == type) {
-          cell.setCellValue(ValueConverter.toLocalDateTime(matrixRow[col]))
+          cell.setCellValue(ValueConverter.asLocalDateTime(matrixRow[col]))
           cell.setCellStyle(localDateTimeStyle)
         } else if (Date == type) {
           cell.setCellValue(matrixRow[col] as Date)
