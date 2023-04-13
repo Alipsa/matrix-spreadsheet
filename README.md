@@ -24,6 +24,7 @@ import se.alipsa.groovy.spreadsheet.*
 import se.alipsa.groovy.matrix.Matrix
 
 Matrix table = SpreadsheetImporter.importSpreadsheet(file: "Book1.xlsx", endRow: 11, endCol: 4)
+println(table.head(10))
 ```
 The SpreadSheetImporter.importSpreadSheetSheet takes the following parameters:
 - _file_ the filePath or the file object pointing to the Excel file
