@@ -8,7 +8,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.util.IOUtils
-import se.alipsa.groovy.matrix.TableMatrix
+import se.alipsa.groovy.matrix.Matrix
 import se.alipsa.groovy.matrix.ValueConverter
 import se.alipsa.groovy.spreadsheet.SpreadsheetUtil
 
@@ -22,12 +22,12 @@ class ExcelExporter {
   /**
    * Export to an Excel file. If the file does not exists, a new file will be created
    * if the excel file exists and is not empty, a new sheet will be added to the excel
-   * The name of the sheet will correspond to the name of the TableMatrix
+   * The name of the sheet will correspond to the name of the Matrix
    * @param filePath the path to the file to export
-   * @param data the TableMatrix data to export
+   * @param data the Matrix data to export
    * @return the actual name of the sheet created (illegal characters replaced by space)
    */
-  static String exportExcel(String filePath, TableMatrix data) {
+  static String exportExcel(String filePath, Matrix data) {
     File file = new File(filePath)
     exportExcel(file, data)
   }
@@ -35,13 +35,13 @@ class ExcelExporter {
   /**
    * Export to an Excel file. If the file does not exists, a new file will be created
    * if the excel file exists and is not empty, a new sheet will be added to the excel
-   * The name of the sheet will correspond to the name of the TableMatrix
+   * The name of the sheet will correspond to the name of the Matrix
    * @param file the file to export
-   * @param data the TableMatrix data to export
+   * @param data the Matrix data to export
    * @return the actual name of the sheet created (illegal characters replaced by space)
    */
-  static String exportExcel(File file, TableMatrix data) {
-    String sheetName = SpreadsheetUtil.createValidSheetName(data.getName())
+  static String exportExcel(File file, Matrix data) {
+    String sheetName = SpreadsheetUtil.createValidSheetName(data.name)
     exportExcel(file, data, sheetName)
     return sheetName
   }
@@ -51,11 +51,11 @@ class ExcelExporter {
    * if the excel file exists and is not empty, a new sheet will be added to the excel
    *
    * @param file the file to export
-   * @param data the TableMatrix data to export
+   * @param data the Matrix data to export
    * @param sheetName the name of the sheet to export to
    * @return the actual name of the sheet created (illegal characters replaced by space)
    */
-  static String exportExcel(File file, TableMatrix data, String sheetName) {
+  static String exportExcel(File file, Matrix data, String sheetName) {
     String validSheetName = SpreadsheetUtil.createValidSheetName(sheetName)
     if (file.exists() && file.length() > 0) {
       try (FileInputStream fis = new FileInputStream(file)
@@ -76,7 +76,7 @@ class ExcelExporter {
       }
     } else {
       try (Workbook workbook = WorkbookFactory.create(isXssf(file))) {
-        Sheet sheet = workbook.createSheet(validSheetName);
+        Sheet sheet = workbook.createSheet(validSheetName)
         buildSheet(data, sheet)
         writeFile(file, workbook)
       }
@@ -84,11 +84,11 @@ class ExcelExporter {
     return validSheetName
   }
 
-  static List<String> exportExcelSheets(String filePath, List<TableMatrix> data, List<String> sheetNames) {
+  static List<String> exportExcelSheets(String filePath, List<Matrix> data, List<String> sheetNames) {
     return exportExcelSheets(new File(filePath), data, sheetNames)
   }
 
-  static List<String> exportExcelSheets(File file, List<TableMatrix> data, List<String> sheetNames) throws IOException {
+  static List<String> exportExcelSheets(File file, List<Matrix> data, List<String> sheetNames) throws IOException {
     try {
       Workbook workbook
       FileInputStream fis = null
@@ -101,7 +101,7 @@ class ExcelExporter {
 
       List<String> actualSheetNames = []
       for (int i = 0; i < data.size(); i++) {
-        TableMatrix dataFrame = data.get(i)
+        Matrix dataFrame = data.get(i)
         String sheetName = sheetNames.toArray()[i]
         actualSheetNames.add(upsertSheet(dataFrame, sheetName, workbook))
       }
@@ -124,7 +124,7 @@ class ExcelExporter {
 
   }
 
-  private static void buildSheet(TableMatrix data, Sheet sheet) {
+  private static void buildSheet(Matrix data, Sheet sheet) {
     def creationHelper = sheet.getWorkbook().getCreationHelper()
     def localDateStyle = sheet.getWorkbook().createCellStyle()
     localDateStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-MM-dd"))
@@ -176,7 +176,7 @@ class ExcelExporter {
     }
   }
 
-  private static String upsertSheet(TableMatrix dataFrame, String sheetName, Workbook workbook) {
+  private static String upsertSheet(Matrix dataFrame, String sheetName, Workbook workbook) {
     Sheet sheet = workbook.getSheet(sheetName)
     if (sheet == null) {
       sheet = workbook.createSheet(SpreadsheetUtil.createValidSheetName(sheetName))
@@ -187,7 +187,7 @@ class ExcelExporter {
 
   private static void writeFile(File file, Workbook workbook) throws IOException {
     if (workbook == null) {
-      logger.warn("Workbook is null, cannot write to file");
+      logger.warn("Workbook is null, cannot write to file")
       return
     }
     logger.info("Writing spreadsheet to {}", file.getAbsolutePath())

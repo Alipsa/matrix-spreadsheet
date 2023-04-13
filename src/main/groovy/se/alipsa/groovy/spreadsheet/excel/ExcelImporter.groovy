@@ -26,9 +26,9 @@ class ExcelImporter {
      * @param endCol the end column name (K, L etc) or column number (11, 12 etc.)
      * @param firstRowAsColNames whether the first row should be used for the names of each column, if false
      * it column names will be v1, v2 etc. Defaults to true
-     * @return A TableMatrix with the excel data.
+     * @return A Matrix with the excel data.
      */
-    static TableMatrix importExcel(String file, String sheetName = 'Sheet1',
+    static Matrix importExcel(String file, String sheetName = 'Sheet1',
                                         int startRow = 1, int endRow,
                                         String startCol = 'A', String endCol,
                                         boolean firstRowAsColNames = true) {
@@ -44,12 +44,12 @@ class ExcelImporter {
         )
     }
 
-    static TableMatrix importExcel(String file, int sheetNumber,
+    static Matrix importExcel(String file, int sheetNumber,
                                    int startRow = 1, int endRow,
                                    int startCol = 1, int endCol,
                                    boolean firstRowAsColNames = true) {
         def header = []
-        File excelFile = FileUtil.checkFilePath(file);
+        File excelFile = FileUtil.checkFilePath(file)
         try (Workbook workbook = WorkbookFactory.create(excelFile)) {
             Sheet sheet = workbook.getSheetAt(sheetNumber)
             if (firstRowAsColNames) {
@@ -64,7 +64,7 @@ class ExcelImporter {
         }
     }
 
-    static TableMatrix importExcel(String file, int sheet,
+    static Matrix importExcel(String file, int sheet,
                                        int startRow = 1, int endRow,
                                        String startColumn = 'A', String endColumn,
                                        boolean firstRowAsColNames = true) {
@@ -79,12 +79,12 @@ class ExcelImporter {
         )
     }
 
-    static TableMatrix importExcel(String file, String sheetName = 'Sheet1',
+    static Matrix importExcel(String file, String sheetName = 'Sheet1',
                                           int startRow = 1, int endRow,
                                           int startCol = 1, int endCol,
                                           boolean firstRowAsColNames = true) {
         def header = []
-        File excelFile = FileUtil.checkFilePath(file);
+        File excelFile = FileUtil.checkFilePath(file)
         try (Workbook workbook = WorkbookFactory.create(excelFile)) {
             Sheet sheet = workbook.getSheet(sheetName)
             if (firstRowAsColNames) {
@@ -110,7 +110,7 @@ class ExcelImporter {
         }
     }
 
-    private static TableMatrix importExcelSheet(Sheet sheet, int startRowNum, int endRowNum, int startColNum, int endColNum, List<String> colNames) {
+    private static Matrix importExcelSheet(Sheet sheet, int startRowNum, int endRowNum, int startColNum, int endColNum, List<String> colNames) {
         startRowNum--
         endRowNum--
         startColNum--
@@ -150,6 +150,6 @@ class ExcelImporter {
             }
             matrix.add(rowList)
         }
-        return TableMatrix.create(colNames, matrix, [Object]*colNames.size())
+        return Matrix.create(colNames, matrix, [Object]*colNames.size())
     }
 }

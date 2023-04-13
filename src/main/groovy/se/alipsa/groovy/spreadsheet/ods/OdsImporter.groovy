@@ -2,7 +2,7 @@ package se.alipsa.groovy.spreadsheet.ods
 
 import com.github.miachm.sods.Sheet
 import com.github.miachm.sods.SpreadSheet
-import se.alipsa.groovy.matrix.TableMatrix
+import se.alipsa.groovy.matrix.Matrix
 import se.alipsa.groovy.spreadsheet.FileUtil
 import se.alipsa.groovy.spreadsheet.SpreadsheetUtil
 
@@ -21,9 +21,9 @@ class OdsImporter {
    * @param endCol the end column name (K, L etc) or column number (11, 12 etc.)
    * @param firstRowAsColNames whether the first row should be used for the names of each column, if false
    * it column names will be v1, v2 etc. Defaults to true
-   * @return A TableMatrix with the excel data.
+   * @return A Matrix with the excel data.
    */
-  static TableMatrix importOds(String file, int sheetNumber,
+  static Matrix importOds(String file, int sheetNumber,
                                int startRow = 1, int endRow,
                                String startCol = 'A', String endCol,
                                boolean firstRowAsColNames = true) {
@@ -49,9 +49,9 @@ class OdsImporter {
    * @param endCol the end column name (K, L etc) or column number (11, 12 etc.)
    * @param firstRowAsColNames whether the first row should be used for the names of each column, if false
    * it column names will be v1, v2 etc. Defaults to true
-   * @return A TableMatrix with the excel data.
+   * @return A Matrix with the excel data.
    */
-  static TableMatrix importOds(String file, String sheetName = 'Sheet1',
+  static Matrix importOds(String file, String sheetName = 'Sheet1',
                                       int startRow = 1, int endRow,
                                       String startCol = 'A', String endCol,
                                       boolean firstRowAsColNames = true) {
@@ -67,7 +67,7 @@ class OdsImporter {
     )
   }
 
-  static TableMatrix importOds(String file, String sheetName = 'Sheet1',
+  static Matrix importOds(String file, String sheetName = 'Sheet1',
                                       int startRow = 1, int endRow,
                                       int startCol = 1, int endCol,
                                       boolean firstRowAsColNames = true) {
@@ -86,7 +86,7 @@ class OdsImporter {
     return importOds(sheet, startRow, endRow, startCol, endCol, header)
   }
 
-  static TableMatrix importOds(String file, int sheetNumber,
+  static Matrix importOds(String file, int sheetNumber,
                                int startRow = 1, int endRow,
                                int startCol = 1, int endCol,
                                boolean firstRowAsColNames = true) {
@@ -105,7 +105,7 @@ class OdsImporter {
     return importOds(sheet, startRow, endRow, startCol, endCol, header)
   }
 
-  static TableMatrix importOds(Sheet sheet, int startRow, int endRow, int startCol, int endCol, List<String> colNames) {
+  static Matrix importOds(Sheet sheet, int startRow, int endRow, int startCol, int endCol, List<String> colNames) {
     startRow--
     endRow--
     startCol--
@@ -125,7 +125,7 @@ class OdsImporter {
             // In excel there is no % in the end of percentage cell, so we make it the same
             // This has the unfortunate consequence that intentional columns ending with % will be changed
             try {
-              double dblVal = Double.parseDouble(val.replace("%", "").replace(",", ".")) / 100;
+              double dblVal = Double.parseDouble(val.replace("%", "").replace(",", ".")) / 100
               val = String.valueOf(dblVal)
             } catch (NumberFormatException ignored) {
               // it is not a percentage number, leave the value as it was
@@ -136,7 +136,7 @@ class OdsImporter {
       }
       matrix.add(rowList)
     }
-    return TableMatrix.create(colNames, matrix, [String]*colNames.size())
+    return Matrix.create(colNames, matrix, [String]*colNames.size())
   }
 
   private static void buildHeaderRow(int startRowNum, int startColNum, int endColNum, List<String> header, Sheet sheet) {

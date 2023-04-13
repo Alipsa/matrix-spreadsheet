@@ -4,7 +4,7 @@ import com.github.miachm.sods.Sheet
 import com.github.miachm.sods.SpreadSheet
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import se.alipsa.groovy.matrix.TableMatrix
+import se.alipsa.groovy.matrix.Matrix
 import se.alipsa.groovy.spreadsheet.SpreadsheetUtil
 
 class OdsExporter {
@@ -14,22 +14,22 @@ class OdsExporter {
   /**
    * Create a new Open Document Spreadsheet file.
    *
-   * @param dataFrame the TableMatrix to export
+   * @param dataFrame the Matrix to export
    * @param filePath the file path + file name of the file to export to. Should end with .ods
    * @return the actual name of the sheet created (illegal characters replaced by space)
    */
-  static String exportOds(String filePath, TableMatrix dataFrame) {
+  static String exportOds(String filePath, Matrix dataFrame) {
     return exportOds(new File(filePath), dataFrame)
   }
 
   /**
    * Create a new Open Document Spreadsheet file.
    *
-   * @param dataFrame the TableMatrix to export
+   * @param dataFrame the Matrix to export
    * @param filePath the file path + file name of the file to export to. Should end with .ods
    * @return the actual name of the sheet created (illegal characters replaced by space)
    */
-  static String exportOds(File file, TableMatrix dataFrame) {
+  static String exportOds(File file, Matrix dataFrame) {
     try {
       SpreadSheet spreadSheet
       if (file.exists()) {
@@ -58,7 +58,7 @@ class OdsExporter {
    * @param sheetName the name of the sheet to write to
    * @return true if successful, false if not written (e.g. file cannot be written to)
    */
-  static String exportOds(File file, TableMatrix dataFrame, String sheetName) {
+  static String exportOds(File file, Matrix dataFrame, String sheetName) {
     return exportOdsSheets(file, [dataFrame], [sheetName])[0]
   }
 
@@ -70,16 +70,16 @@ class OdsExporter {
    * @param sheetName the name of the sheet to write to
    * @return true if successful, false if not written (e.g. file cannot be written to)
    */
-  static String exportOds(String filePath, TableMatrix dataFrame, String sheetName) {
+  static String exportOds(String filePath, Matrix dataFrame, String sheetName) {
     return exportOdsSheets(filePath, [dataFrame], [sheetName])
   }
 
-  static List<String> exportOdsSheets(String filePath, List<TableMatrix> data, List<String> sheetNames) {
+  static List<String> exportOdsSheets(String filePath, List<Matrix> data, List<String> sheetNames) {
     File file = new File(filePath)
     exportOdsSheets(file, data, sheetNames)
   }
 
-  static List<String> exportOdsSheets(File file, List<TableMatrix> data, List<String> sheetNames) {
+  static List<String> exportOdsSheets(File file, List<Matrix> data, List<String> sheetNames) {
     try {
       SpreadSheet spreadSheet
       if (file.exists()) {
@@ -89,7 +89,7 @@ class OdsExporter {
       }
       List<String> actualSheetNames = []
       for (int i = 0; i < data.size(); i++) {
-        TableMatrix dataFrame = data[i]
+        Matrix dataFrame = data[i]
         String sheetName = SpreadsheetUtil.createValidSheetName(sheetNames[i])
         upsertSheet(dataFrame, sheetName, spreadSheet)
         actualSheetNames.add(sheetName)
@@ -102,7 +102,7 @@ class OdsExporter {
     }
   }
 
-  private static String upsertSheet(TableMatrix dataFrame, String sheetName, SpreadSheet spreadSheet) {
+  private static String upsertSheet(Matrix dataFrame, String sheetName, SpreadSheet spreadSheet) {
     Sheet sheet = spreadSheet.getSheet(sheetName)
     String actualSheetName = SpreadsheetUtil.createValidSheetName(sheetName)
     if (sheet == null) {
@@ -112,7 +112,7 @@ class OdsExporter {
     return buildSheet(dataFrame, sheet)
   }
 
-  private static String buildSheet(TableMatrix dataFrame, Sheet sheet) {
+  private static String buildSheet(Matrix dataFrame, Sheet sheet) {
 
     List<String> names = dataFrame.columnNames()
 

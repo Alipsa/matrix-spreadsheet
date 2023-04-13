@@ -1,12 +1,12 @@
 package se.alipsa.groovy.spreadsheet
 
-import se.alipsa.groovy.matrix.TableMatrix
+import se.alipsa.groovy.matrix.Matrix
 import se.alipsa.groovy.spreadsheet.excel.ExcelImporter
 import se.alipsa.groovy.spreadsheet.ods.OdsImporter
 
 class SpreadsheetImporter {
 
-  static TableMatrix importSpreadsheet(String file, int sheet,
+  static Matrix importSpreadsheet(String file, int sheet,
                                        int startRow = 1, int endRow,
                                        int startColumn = 1, int endColumn,
                                        boolean firstRowAsColNames = true) {
@@ -16,7 +16,7 @@ class SpreadsheetImporter {
     return ExcelImporter.importExcel(file, sheet, startRow, endRow, startColumn, endColumn, firstRowAsColNames)
   }
 
-  static TableMatrix importSpreadsheet(String file, int sheet,
+  static Matrix importSpreadsheet(String file, int sheet,
                                        int startRow = 1, int endRow,
                                        String startColumn = 'A', String endColumn,
                                        boolean firstRowAsColNames = true) {
@@ -26,7 +26,7 @@ class SpreadsheetImporter {
     return ExcelImporter.importExcel(file, sheet, startRow, endRow, startColumn, endColumn, firstRowAsColNames)
   }
 
-  static TableMatrix importSpreadsheet(String file, String sheet = 'Sheet1',
+  static Matrix importSpreadsheet(String file, String sheet = 'Sheet1',
                                       int startRow = 1, int endRow,
                                       int startCol = 1, int endCol,
                                       boolean firstRowAsColNames = true) {
@@ -36,7 +36,7 @@ class SpreadsheetImporter {
     return ExcelImporter.importExcel(file, sheet, startRow, endRow, startCol, endCol, firstRowAsColNames)
   }
 
-  static TableMatrix importSpreadsheet(String file, String sheet = 'Sheet1',
+  static Matrix importSpreadsheet(String file, String sheet = 'Sheet1',
                                       int startRow = 1, int endRow,
                                       String startCol = 'A', String endCol,
                                       boolean firstRowAsColNames = true) {
@@ -46,7 +46,7 @@ class SpreadsheetImporter {
     return ExcelImporter.importExcel(file, sheet, startRow, endRow, startCol, endCol, firstRowAsColNames)
   }
 
-  static TableMatrix importSpreadsheet(Map params) {
+  static Matrix importSpreadsheet(Map params) {
     def fp = params.getOrDefault('file', null)
     validateNotNull(fp, 'file')
     String file

@@ -2,7 +2,7 @@ package spreadsheet
 
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import se.alipsa.groovy.matrix.TableMatrix
+import se.alipsa.groovy.matrix.Matrix
 import se.alipsa.groovy.spreadsheet.SpreadsheetReader
 import se.alipsa.groovy.spreadsheet.SpreadsheetExporter
 import se.alipsa.groovy.spreadsheet.SpreadsheetUtil
@@ -16,8 +16,8 @@ import static se.alipsa.groovy.matrix.ListConverter.*
 
 class ExportTest {
 
-  static TableMatrix table
-  static TableMatrix table2
+  static Matrix table
+  static Matrix table2
 
   @BeforeAll
   static void init() {
@@ -29,13 +29,13 @@ class ExportTest {
         measure: [12.45, null, 14.11, 15.23, 10.99],
         active: [true, false, null, true, false]
     ]
-    table = TableMatrix.create(matrix, [int, String, LocalDate, LocalDateTime, BigDecimal, Boolean])
+    table = Matrix.create(matrix, [int, String, LocalDate, LocalDateTime, BigDecimal, Boolean])
     def stats = [
         id: [null,2,3,4,-5],
         jan: [1123.1234, 2341.234, 1010.00122, 991, 1100.1],
         feb: [1111.1235, 2312.235, 1001.00121, 999, 1200.7]
     ]
-    table2 = TableMatrix.create(stats, [int, BigDecimal, BigDecimal])
+    table2 = Matrix.create(stats, [int, BigDecimal, BigDecimal])
   }
 
   @Test
