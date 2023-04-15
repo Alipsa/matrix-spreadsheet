@@ -159,7 +159,7 @@ class ExcelReader implements SpreadsheetReader  {
     }
 
     int findLastRow(Sheet sheet) {
-        sheet.getLastRowNum()
+        sheet.getLastRowNum() + 1
     }
 
     @Override

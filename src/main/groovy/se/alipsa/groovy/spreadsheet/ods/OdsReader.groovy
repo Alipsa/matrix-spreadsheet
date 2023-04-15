@@ -144,7 +144,7 @@ class OdsReader implements SpreadsheetReader {
    }
 
    int findLastRow(Sheet sheet) {
-      sheet.getDataRange().getLastRow() + 1
+      sheet.getDataRange().getLastRow()
    }
 
    @Override
@@ -157,8 +157,16 @@ class OdsReader implements SpreadsheetReader {
       findLastCol(spreadSheet.getSheet(sheetName))
    }
 
-   int findLastCol(Sheet sheet) {
-      sheet.getDataRange().getLastColumn() + 1
+   static int findLastCol(Sheet sheet, int numRowsToScan = 10) {
+      def lastCol = sheet.getDataRange().getLastColumn() // this is often way off (too big)
+      for (int lc = lastCol; lc > 0; lc--) {
+         for (int rowCount = 0; rowCount < numRowsToScan; rowCount++) {
+            if (sheet.getRange(rowCount, lc).value != null) {
+               return lc + 1
+            }
+         }
+      }
+      return lastCol + 1
    }
 
    @Override
