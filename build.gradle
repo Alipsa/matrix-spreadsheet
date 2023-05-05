@@ -67,11 +67,11 @@ publishing {
             pom {
                 name = 'Groovy spreadsheet import/export'
                 description = "${project.description}"
-                url = "https://github.com/Alipsa/spreadsheet"
+                url = "https://github.com/Alipsa/matrix-spreadsheet"
                 licenses {
                     license {
                         name = 'MIT License'
-                        url = 'https://raw.githubusercontent.com/Alipsa/spreadsheet/master/LICENSE'
+                        url = 'https://raw.githubusercontent.com/Alipsa/matrix-spreadsheet/master/LICENSE'
                     }
                 }
                 developers {
@@ -81,9 +81,9 @@ publishing {
                     }
                 }
                 scm {
-                    url = 'https://github.com/Alipsa/spreadsheet/tree/master'
-                    connection = 'scm:git:https://github.com/Alipsa/spreadsheet.git'
-                    developerConnection = 'scm:git:https://github.com/Alipsa/spreadsheet.git'
+                    url = 'https://github.com/Alipsa/matrix-spreadsheet/tree/master'
+                    connection = 'scm:git:https://github.com/Alipsa/matrix-spreadsheet.git'
+                    developerConnection = 'scm:git:https://github.com/Alipsa/matrix-spreadsheet.git'
                 }
             }
         }
