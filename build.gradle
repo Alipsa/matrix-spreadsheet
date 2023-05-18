@@ -8,25 +8,25 @@ plugins {
 }
 
 group 'se.alipsa.groovy'
-version '1.0.0-SNAPSHOT'
+version '1.0.0'
 description 'Groovy spreadsheet import/export'
 
 repositories {
-    mavenLocal()
+    //mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-    def groovy = 'org.apache.groovy:groovy:4.0.11'
+    def groovy = 'org.apache.groovy:groovy:4.0.12'
     compileOnly groovy
-    api('se.alipsa.groovy:matrix:1.1.0-SNAPSHOT')
+    api('se.alipsa.groovy:matrix:1.1.1')
     implementation('org.apache.poi:poi:5.2.3')
     implementation('org.apache.poi:poi-ooxml:5.2.3')
     implementation 'com.github.miachm.sods:SODS:1.5.4'
 
     testImplementation 'org.apache.logging.log4j:log4j-core:2.20.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
     testImplementation groovy
 }
 
@@ -42,13 +42,13 @@ test {
 
 //Maven Central uploads
 task javadocJar(type: Jar, dependsOn: groovydoc) {
-    classifier = 'javadoc'
+    archiveClassifier.set('javadoc')
     from groovydoc.destinationDir
 }
 
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    archiveClassifier.set('sources')
     from sourceSets.main.allSource
 }
 
@@ -96,5 +96,23 @@ signing {
         sign publishing.publications.maven
     } else {
         project.logger.lifecycle("signing.keyId is not defined, skipping signing of artifacts...")
+    }
+}
+
+def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
+}
+// https://github.com/ben-manes/gradle-versions-plugin
+tasks.named("dependencyUpdates").configure {
+    resolutionStrategy {
+        componentSelection {
+            all {
+                if (isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)) {
+                    reject('Release candidate')
+                }
+            }
+        }
     }
 }
