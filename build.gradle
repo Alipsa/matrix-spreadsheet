@@ -4,7 +4,7 @@ plugins {
     id 'signing'
     id 'maven-publish'
     id('io.github.gradle-nexus.publish-plugin') version '1.3.0'
-    id "com.github.ben-manes.versions" version "0.46.0"
+    id "com.github.ben-manes.versions" version "0.48.0"
 }
 
 group 'se.alipsa.groovy'
@@ -12,21 +12,23 @@ version '1.0.1-SNAPSHOT'
 description 'Groovy spreadsheet import/export'
 
 repositories {
-    //mavenLocal()
+    if (version.contains('SNAPSHOT')) {
+        mavenLocal()
+    }
     mavenCentral()
 }
 
 dependencies {
-    def groovy = 'org.apache.groovy:groovy:4.0.12'
+    def groovy = 'org.apache.groovy:groovy:4.0.15'
     compileOnly groovy
-    api('se.alipsa.groovy:matrix:1.1.1')
-    implementation('org.apache.poi:poi:5.2.3')
-    implementation('org.apache.poi:poi-ooxml:5.2.3')
-    implementation 'com.github.miachm.sods:SODS:1.5.4'
+    api('se.alipsa.groovy:matrix:1.1.3-SNAPSHOT')
+    implementation('org.apache.poi:poi:5.2.4')
+    implementation('org.apache.poi:poi-ooxml:5.2.4')
+    implementation 'com.github.miachm.sods:SODS:1.6.4'
 
     testImplementation 'org.apache.logging.log4j:log4j-core:2.20.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
     testImplementation groovy
 }
 
