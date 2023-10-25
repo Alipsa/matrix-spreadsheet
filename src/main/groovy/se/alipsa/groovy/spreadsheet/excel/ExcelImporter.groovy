@@ -150,6 +150,6 @@ class ExcelImporter {
             }
             matrix.add(rowList)
         }
-        return Matrix.create(colNames, matrix, [Object]*colNames.size())
+        return Matrix.create(sheet.getSheetName(), colNames, matrix, [Object]*colNames.size())
     }
 }

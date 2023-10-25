@@ -136,7 +136,7 @@ class OdsImporter {
       }
       matrix.add(rowList)
     }
-    return Matrix.create(colNames, matrix, [String]*colNames.size())
+    return Matrix.create(sheet.name, colNames, matrix, [String]*colNames.size())
   }
 
   private static void buildHeaderRow(int startRowNum, int startColNum, int endColNum, List<String> header, Sheet sheet) {
